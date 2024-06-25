@@ -6,6 +6,34 @@ use Illuminate\Database\Eloquent\Model;
 use Couchbase\Bucket;
 use Couchbase\QueryOptions;
 
+/**
+ * @OA\Schema(
+ *     schema="Route",
+ *     type="object",
+ *     title="Route",
+ *     required={"id", "airline", "source_airport", "destination_airport"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="string",
+ *         description="ID of the route"
+ *     ),
+ *     @OA\Property(
+ *         property="airline",
+ *         type="string",
+ *         description="Airline operating the route"
+ *     ),
+ *     @OA\Property(
+ *         property="source_airport",
+ *         type="string",
+ *         description="Source airport"
+ *     ),
+ *     @OA\Property(
+ *         property="destination_airport",
+ *         type="string",
+ *         description="Destination airport"
+ *     )
+ * )
+ */
 class Route extends Model
 {
     protected $bucket;

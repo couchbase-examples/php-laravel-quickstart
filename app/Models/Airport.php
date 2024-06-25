@@ -6,6 +6,44 @@ use Illuminate\Database\Eloquent\Model;
 use Couchbase\Bucket;
 use Couchbase\QueryOptions;
 
+/**
+ * @OA\Schema(
+ *     schema="Airport",
+ *     type="object",
+ *     title="Airport",
+ *     required={"id", "name"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="string",
+ *         description="ID of the airport"
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         description="Name of the airport"
+ *     ),
+ *     @OA\Property(
+ *         property="city",
+ *         type="string",
+ *         description="City where the airport is located"
+ *     ),
+ *     @OA\Property(
+ *         property="country",
+ *         type="string",
+ *         description="Country where the airport is located"
+ *     ),
+ *     @OA\Property(
+ *         property="iata",
+ *         type="string",
+ *         description="IATA code of the airport"
+ *     ),
+ *     @OA\Property(
+ *         property="icao",
+ *         type="string",
+ *         description="ICAO code of the airport"
+ *     )
+ * )
+ */
 class Airport extends Model
 {
     protected $bucket;

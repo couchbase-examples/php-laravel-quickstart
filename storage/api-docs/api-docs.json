@@ -1,0 +1,551 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Documentation",
+        "description": "Swagger API documentation for the Laravel API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/airlines/list": {
+            "get": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Get list of airlines",
+                "description": "Returns list of airlines",
+                "operationId": "getAirlinesList",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/airlines/{id}": {
+            "get": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Get airline information",
+                "description": "Returns airline data",
+                "operationId": "getAirlineById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Update an existing airline",
+                "description": "Update an existing airline",
+                "operationId": "updateAirline",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Airline object that needs to be updated",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Airline"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Create a new airline",
+                "description": "Create a new airline",
+                "operationId": "createAirline",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Airline object that needs to be added",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Airline"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Delete an airline",
+                "description": "Delete an airline",
+                "operationId": "deleteAirline",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/airlines/to-airport": {
+            "get": {
+                "tags": [
+                    "Airlines"
+                ],
+                "summary": "Get airlines flying to a destination airport",
+                "description": "Returns list of airlines flying to a specific airport",
+                "operationId": "getAirlinesToAirport",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/v1/airports/{id}": {
+            "get": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get airport information",
+                "description": "Returns airport data",
+                "operationId": "getAirportById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Update an existing airport",
+                "description": "Update an existing airport",
+                "operationId": "updateAirport",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Airport object that needs to be updated",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Airport"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Create a new airport",
+                "description": "Create a new airport",
+                "operationId": "createAirport",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Airport object that needs to be added",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Airport"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Delete an airport",
+                "description": "Delete an airport",
+                "operationId": "deleteAirport",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/v1/airports/direct-connections": {
+            "get": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get direct connections to/from the airport",
+                "description": "Returns direct connections for a specific airport",
+                "operationId": "getDirectConnections",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/v1/routes/{id}": {
+            "get": {
+                "tags": [
+                    "Routes"
+                ],
+                "summary": "Get route information",
+                "description": "Returns route data",
+                "operationId": "getRouteById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Routes"
+                ],
+                "summary": "Update an existing route",
+                "description": "Update an existing route",
+                "operationId": "updateRoute",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Route object that needs to be updated",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Route"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Routes"
+                ],
+                "summary": "Create a new route",
+                "description": "Create a new route",
+                "operationId": "createRoute",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Route object that needs to be added",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Route"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Routes"
+                ],
+                "summary": "Delete a route",
+                "description": "Delete a route",
+                "operationId": "deleteRoute",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Airline": {
+                "title": "Airline",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the airline",
+                        "type": "string"
+                    },
+                    "callsign": {
+                        "description": "Callsign of the airline",
+                        "type": "string"
+                    },
+                    "country": {
+                        "description": "Country of the airline",
+                        "type": "string"
+                    },
+                    "iata": {
+                        "description": "IATA code of the airline",
+                        "type": "string"
+                    },
+                    "icao": {
+                        "description": "ICAO code of the airline",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Name of the airline",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Airport": {
+                "title": "Airport",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the airport",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Name of the airport",
+                        "type": "string"
+                    },
+                    "city": {
+                        "description": "City where the airport is located",
+                        "type": "string"
+                    },
+                    "country": {
+                        "description": "Country where the airport is located",
+                        "type": "string"
+                    },
+                    "iata": {
+                        "description": "IATA code of the airport",
+                        "type": "string"
+                    },
+                    "icao": {
+                        "description": "ICAO code of the airport",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Route": {
+                "title": "Route",
+                "required": [
+                    "id",
+                    "airline",
+                    "source_airport",
+                    "destination_airport"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the route",
+                        "type": "string"
+                    },
+                    "airline": {
+                        "description": "Airline operating the route",
+                        "type": "string"
+                    },
+                    "source_airport": {
+                        "description": "Source airport",
+                        "type": "string"
+                    },
+                    "destination_airport": {
+                        "description": "Destination airport",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}
