@@ -1,10 +1,20 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "API Documentation",
-        "description": "Swagger API documentation for the Laravel API",
+        "title": "Quickstart in Couchbase with PHP and Laravel",
+        "description": "\nA quickstart API using PHP and Laravel with Couchbase and travel-sample data.\n\nWe have a visual representation of the API documentation using Swagger which allows you to interact with the API's endpoints directly through the browser. It provides a clear view of the API including endpoints, HTTP methods, request parameters, and response objects.\n\n### Trying Out the API\n\nYou can try out an API by clicking on the 'Try it out' button next to the endpoints.\n\n- **Parameters:** If an endpoint requires parameters, Swagger UI provides input boxes for you to fill in. This could include path parameters, query strings, headers, or the body of a POST/PUT request.\n- **Execution:** Once you've inputted all the necessary parameters, you can click the 'Execute' button to make a live API call. Swagger UI will send the request to the API and display the response directly in the documentation. This includes the response code, response headers, and response body.\n\n### Models\n\nSwagger documents the structure of request and response bodies using models. These models define the expected data structure using JSON schema and are extremely helpful in understanding what data to send and expect.\n\nFor details on the API, please check the tutorial on the Couchbase Developer Portal: [Couchbase Quickstart PHP Laravel](https://developer.couchbase.com/tutorial-quickstart-php-laravel).\n",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://springdoc.org"
+        },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
     "paths": {
         "/api/v1/airlines/list": {
             "get": {
@@ -453,14 +463,13 @@
             "Airline": {
                 "title": "Airline",
                 "required": [
-                    "id",
+                    "callsign",
+                    "country",
+                    "iata",
+                    "icao",
                     "name"
                 ],
                 "properties": {
-                    "id": {
-                        "description": "ID of the airline",
-                        "type": "string"
-                    },
                     "callsign": {
                         "description": "Callsign of the airline",
                         "type": "string"
@@ -488,14 +497,22 @@
                 "title": "Airport",
                 "required": [
                     "id",
-                    "name"
+                    "airportname",
+                    "city",
+                    "country",
+                    "faa",
+                    "icao",
+                    "tz",
+                    "geo.lat",
+                    "geo.lon",
+                    "geo.alt"
                 ],
                 "properties": {
                     "id": {
                         "description": "ID of the airport",
                         "type": "string"
                     },
-                    "name": {
+                    "airportname": {
                         "description": "Name of the airport",
                         "type": "string"
                     },
@@ -507,12 +524,28 @@
                         "description": "Country where the airport is located",
                         "type": "string"
                     },
-                    "iata": {
-                        "description": "IATA code of the airport",
+                    "faa": {
+                        "description": "FAA code of the airport",
                         "type": "string"
                     },
                     "icao": {
                         "description": "ICAO code of the airport",
+                        "type": "string"
+                    },
+                    "tz": {
+                        "description": "Timezone of the airport",
+                        "type": "string"
+                    },
+                    "geo.lat": {
+                        "description": "Latitude of the airport",
+                        "type": "string"
+                    },
+                    "geo.lon": {
+                        "description": "Longitude of the airport",
+                        "type": "string"
+                    },
+                    "geo.alt": {
+                        "description": "Altitude of the airport",
                         "type": "string"
                     }
                 },
@@ -524,7 +557,11 @@
                     "id",
                     "airline",
                     "source_airport",
-                    "destination_airport"
+                    "destination_airport",
+                    "stops",
+                    "equipment",
+                    "schedule",
+                    "distance"
                 ],
                 "properties": {
                     "id": {
@@ -542,6 +579,36 @@
                     "destination_airport": {
                         "description": "Destination airport",
                         "type": "string"
+                    },
+                    "stops": {
+                        "description": "Number of stops in the route",
+                        "type": "integer"
+                    },
+                    "equipment": {
+                        "description": "Equipment used in the route",
+                        "type": "string"
+                    },
+                    "schedule": {
+                        "description": "Schedule details of the route",
+                        "properties": {
+                            "day": {
+                                "description": "Day of the schedule",
+                                "type": "string"
+                            },
+                            "utc": {
+                                "description": "UTC time of the schedule",
+                                "type": "string"
+                            },
+                            "flight": {
+                                "description": "Flight number of the schedule",
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "distance": {
+                        "description": "Distance of the route",
+                        "type": "integer"
                     }
                 },
                 "type": "object"
