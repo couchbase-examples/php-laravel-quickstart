@@ -3,22 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Couchbase\Bucket;
-use Couchbase\QueryOptions;
 
 /**
  * @OA\Schema(
  *     schema="Airport",
  *     type="object",
  *     title="Airport",
- *     required={"id", "name"},
+ *     required={"airportname", "city", "country", "icao", "tz", "geo"},
  *     @OA\Property(
- *         property="id",
- *         type="string",
- *         description="ID of the airport"
- *     ),
- *     @OA\Property(
- *         property="name",
+ *         property="airportname",
  *         type="string",
  *         description="Name of the airport"
  *     ),
@@ -33,14 +26,42 @@ use Couchbase\QueryOptions;
  *         description="Country where the airport is located"
  *     ),
  *     @OA\Property(
- *         property="iata",
+ *         property="faa",
  *         type="string",
- *         description="IATA code of the airport"
+ *         description="FAA code of the airport"
  *     ),
  *     @OA\Property(
  *         property="icao",
  *         type="string",
  *         description="ICAO code of the airport"
+ *     ),
+ *     @OA\Property(
+ *         property="tz",
+ *         type="string",
+ *         description="Time zone of the airport"
+ *     ),
+ *     @OA\Property(
+ *         property="geo",
+ *         type="object",
+ *         description="Geographical coordinates of the airport",
+ *         @OA\Property(
+ *             property="lat",
+ *             type="number",
+ *             format="float",
+ *             description="Latitude"
+ *         ),
+ *         @OA\Property(
+ *             property="lon",
+ *             type="number",
+ *             format="float",
+ *             description="Longitude"
+ *         ),
+ *         @OA\Property(
+ *             property="alt",
+ *             type="number",
+ *             format="float",
+ *             description="Altitude"
+ *         )
  *     )
  * )
  */
@@ -48,19 +69,35 @@ class Airport extends Model
 {
     protected $bucket;
 
+    protected $fillable = [
+        'airportname',
+        'city',
+        'country',
+        'faa',
+        'icao',
+        'tz',
+        'geo',
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->bucket = app('couchbase.bucket');
     }
 
-    public static function getAll($offset = 0, $limit = 10)
+    public static function getAllAirports($offset = 0, $limit = 10)
     {
         $instance = new static;
         $query = "SELECT * FROM `travel-sample`.`inventory`.`airport` LIMIT $limit OFFSET $offset";
         try {
             $result = $instance->bucket->scope('inventory')->query($query);
-            return collect($result->rows());
+            $rows = $result->rows();
+            $rows = array_map(function ($row) {
+                unset($row['id']);
+                unset($row['type']);
+                return $row;
+            }, $rows);
+            return collect($rows);
         } catch (\Exception $e) {
             \Log::error('Error fetching airports: ' . $e->getMessage());
             return collect([]);
@@ -72,22 +109,23 @@ class Airport extends Model
         $instance = new static;
         try {
             $document = $instance->bucket->scope('inventory')->collection('airport')->get($id);
-            return $document->content();
+            $data = $document->content();
+            return new static($data); // Return an Airport instance
         } catch (\Exception $e) {
             \Log::error('Error finding airport: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function saveAirport()
+    public function saveAirport($id)
     {
         $data = $this->attributesToArray();
-        $id = $data['id'];
-        unset($data['id']);
+        unset($data['id']); // Ensure the id is not included in the document content
         try {
             $this->bucket->scope('inventory')->collection('airport')->upsert($id, $data);
         } catch (\Exception $e) {
-            \Log::error('Error saving airport: ' . $e->getMessage());
+            \Log::error('Error saving airport', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 
@@ -98,6 +136,7 @@ class Airport extends Model
             $instance->bucket->scope('inventory')->collection('airport')->remove($id);
         } catch (\Exception $e) {
             \Log::error('Error destroying airport: ' . $e->getMessage());
+            throw $e;
         }
     }
 }

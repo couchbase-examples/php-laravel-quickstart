@@ -3,34 +3,71 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Couchbase\Bucket;
-use Couchbase\QueryOptions;
 
 /**
  * @OA\Schema(
  *     schema="Route",
  *     type="object",
  *     title="Route",
- *     required={"id", "airline", "source_airport", "destination_airport"},
- *     @OA\Property(
- *         property="id",
- *         type="string",
- *         description="ID of the route"
- *     ),
+ *     required={"airline", "airlineid", "sourceairport", "destinationairport", "stops", "equipment", "schedule", "distance"},
  *     @OA\Property(
  *         property="airline",
  *         type="string",
- *         description="Airline operating the route"
+ *         description="Airline code"
  *     ),
  *     @OA\Property(
- *         property="source_airport",
+ *         property="airlineid",
  *         type="string",
- *         description="Source airport"
+ *         description="Airline ID"
  *     ),
  *     @OA\Property(
- *         property="destination_airport",
+ *         property="sourceairport",
  *         type="string",
- *         description="Destination airport"
+ *         description="Source airport code"
+ *     ),
+ *     @OA\Property(
+ *         property="destinationairport",
+ *         type="string",
+ *         description="Destination airport code"
+ *     ),
+ *     @OA\Property(
+ *         property="stops",
+ *         type="integer",
+ *         description="Number of stops"
+ *     ),
+ *     @OA\Property(
+ *         property="equipment",
+ *         type="string",
+ *         description="Equipment used"
+ *     ),
+ *     @OA\Property(
+ *         property="schedule",
+ *         type="array",
+ *         description="Flight schedule",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="day",
+ *                 type="integer",
+ *                 description="Day of the flight"
+ *             ),
+ *             @OA\Property(
+ *                 property="utc",
+ *                 type="string",
+ *                 description="UTC time of the flight"
+ *             ),
+ *             @OA\Property(
+ *                 property="flight",
+ *                 type="string",
+ *                 description="Flight number"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Property(
+ *         property="distance",
+ *         type="number",
+ *         format="float",
+ *         description="Distance of the route"
  *     )
  * )
  */
@@ -38,19 +75,36 @@ class Route extends Model
 {
     protected $bucket;
 
+    protected $fillable = [
+        'airline',
+        'airlineid',
+        'sourceairport',
+        'destinationairport',
+        'stops',
+        'equipment',
+        'schedule',
+        'distance'
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->bucket = app('couchbase.bucket');
     }
 
-    public static function getAll($offset = 0, $limit = 10)
+    public static function getAllRoutes($offset = 0, $limit = 10)
     {
         $instance = new static;
         $query = "SELECT * FROM `travel-sample`.`inventory`.`route` LIMIT $limit OFFSET $offset";
         try {
             $result = $instance->bucket->scope('inventory')->query($query);
-            return collect($result->rows());
+            $rows = $result->rows();
+            $rows = array_map(function ($row) {
+                unset($row['id']);
+                unset($row['type']);
+                return $row;
+            }, $rows);
+            return collect($rows);
         } catch (\Exception $e) {
             \Log::error('Error fetching routes: ' . $e->getMessage());
             return collect([]);
@@ -62,22 +116,23 @@ class Route extends Model
         $instance = new static;
         try {
             $document = $instance->bucket->scope('inventory')->collection('route')->get($id);
-            return $document->content();
+            $data = $document->content();
+            return new static($data); // Return a Route instance
         } catch (\Exception $e) {
             \Log::error('Error finding route: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function saveRoute()
+    public function saveRoute($id)
     {
         $data = $this->attributesToArray();
-        $id = $data['id'];
-        unset($data['id']);
+        unset($data['id']); // Ensure the id is not included in the document content
         try {
             $this->bucket->scope('inventory')->collection('route')->upsert($id, $data);
         } catch (\Exception $e) {
-            \Log::error('Error saving route: ' . $e->getMessage());
+            \Log::error('Error saving route', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 
@@ -88,6 +143,7 @@ class Route extends Model
             $instance->bucket->scope('inventory')->collection('route')->remove($id);
         } catch (\Exception $e) {
             \Log::error('Error destroying route: ' . $e->getMessage());
+            throw $e;
         }
     }
 }

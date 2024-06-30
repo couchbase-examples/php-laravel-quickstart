@@ -3,20 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Couchbase\Bucket;
-use Couchbase\QueryOptions;
 
 /**
  * @OA\Schema(
  *     schema="Airline",
  *     type="object",
  *     title="Airline",
- *     required={"id", "name"},
- *     @OA\Property(
- *         property="id",
- *         type="string",
- *         description="ID of the airline"
- *     ),
+ *     required={"callsign", "country", "iata", "icao", "name"},
  *     @OA\Property(
  *         property="callsign",
  *         type="string",
@@ -48,49 +41,68 @@ class Airline extends Model
 {
     protected $bucket;
 
+    protected $fillable = [
+        'callsign',
+        'country',
+        'iata',
+        'icao',
+        'name'
+    ];
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->bucket = app('couchbase.bucket');
     }
 
-    public static function getAll($offset = 0, $limit = 10)
+    public static function getAllAirlinesByCountry($country, $offset = 0, $limit = 10)
     {
         $instance = new static;
-        $query = "SELECT * FROM `travel-sample`.`inventory`.`airline` LIMIT $limit OFFSET $offset";
+        $query = "SELECT * FROM `travel-sample`.`inventory`.`airline`";
+        if ($country) {
+            $query .= " WHERE country = '$country'";
+        }
+        $query .= " LIMIT $limit OFFSET $offset";
         try {
             $result = $instance->bucket->scope('inventory')->query($query);
-            return collect($result->rows());
+            $rows = $result->rows();
+            $rows = array_map(function ($row) {
+                unset($row['id']);
+                unset($row['type']);
+                return $row;
+            }, $rows);
+            return collect($rows);
         } catch (\Exception $e) {
             \Log::error('Error fetching airlines: ' . $e->getMessage());
             return collect([]);
         }
     }
 
+
     public static function findAirline($id)
     {
         $instance = new static;
         try {
             $document = $instance->bucket->scope('inventory')->collection('airline')->get($id);
-            return $document->content();
+            $data = $document->content();
+            return new static($data); // Return an Airline instance
         } catch (\Exception $e) {
             \Log::error('Error finding airline: ' . $e->getMessage());
             return null;
         }
     }
 
-    public function saveAirline()
+    public function saveAirline($id)
     {
         $data = $this->attributesToArray();
-        $id = $data['id'];
-        unset($data['id']);
+        unset($data['id']); // Ensure the id is not included in the document content
         try {
             $this->bucket->scope('inventory')->collection('airline')->upsert($id, $data);
         } catch (\Exception $e) {
-            \Log::error('Error saving airline: ' . $e->getMessage());
+            \Log::error('Error saving airline', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
-
     public static function destroyAirline($id)
     {
         $instance = new static;
@@ -98,6 +110,8 @@ class Airline extends Model
             $instance->bucket->scope('inventory')->collection('airline')->remove($id);
         } catch (\Exception $e) {
             \Log::error('Error destroying airline: ' . $e->getMessage());
+            throw $e;
         }
     }
+
 }

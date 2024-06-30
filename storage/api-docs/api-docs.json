@@ -5,14 +5,14 @@
         "description": "\nA quickstart API using PHP and Laravel with Couchbase and travel-sample data.\n\nWe have a visual representation of the API documentation using Swagger which allows you to interact with the API's endpoints directly through the browser. It provides a clear view of the API including endpoints, HTTP methods, request parameters, and response objects.\n\n### Trying Out the API\n\nYou can try out an API by clicking on the 'Try it out' button next to the endpoints.\n\n- **Parameters:** If an endpoint requires parameters, Swagger UI provides input boxes for you to fill in. This could include path parameters, query strings, headers, or the body of a POST/PUT request.\n- **Execution:** Once you've inputted all the necessary parameters, you can click the 'Execute' button to make a live API call. Swagger UI will send the request to the API and display the response directly in the documentation. This includes the response code, response headers, and response body.\n\n### Models\n\nSwagger documents the structure of request and response bodies using models. These models define the expected data structure using JSON schema and are extremely helpful in understanding what data to send and expect.\n\nFor details on the API, please check the tutorial on the Couchbase Developer Portal: [Couchbase Quickstart PHP Laravel](https://developer.couchbase.com/tutorial-quickstart-php-laravel).\n",
         "license": {
             "name": "Apache 2.0",
-            "url": "http://springdoc.org"
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://my-default-host.com",
-            "description": "API Server"
+            "url": "http://localhost:8000",
+            "description": "Local server"
         }
     ],
     "paths": {
@@ -31,7 +31,8 @@
                         "required": false,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 0
                     },
                     {
                         "name": "limit",
@@ -39,15 +40,38 @@
                         "required": false,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 10
+                    },
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "United States"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Airline"
+                                    }
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -72,10 +96,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Airline"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -83,8 +117,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Update an existing airline",
-                "description": "Update an existing airline",
+                "summary": "Update an existing airline or create a new one if it does not exist",
+                "description": "Update an existing airline or create a new one if it does not exist",
                 "operationId": "updateAirline",
                 "parameters": [
                     {
@@ -97,7 +131,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Airline object that needs to be updated",
+                    "description": "Airline object that needs to be updated or created",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -111,8 +145,14 @@
                     "200": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "Not Found"
+                    "201": {
+                        "description": "Resource created successfully"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -147,6 +187,12 @@
                 "responses": {
                     "201": {
                         "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -173,6 +219,9 @@
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -188,6 +237,60 @@
                 "responses": {
                     "200": {
                         "description": "Successful operation"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/v1/airports/list": {
+            "get": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get list of airports",
+                "description": "Returns list of airports",
+                "operationId": "getAirportsList",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Airport"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -212,10 +315,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Airport"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -223,8 +336,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Update an existing airport",
-                "description": "Update an existing airport",
+                "summary": "Update an existing airport or create a new one if it does not exist",
+                "description": "Update an existing airport or create a new one if it does not exist",
                 "operationId": "updateAirport",
                 "parameters": [
                     {
@@ -237,7 +350,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Airport object that needs to be updated",
+                    "description": "Airport object that needs to be updated or created",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -251,8 +364,14 @@
                     "200": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "Not Found"
+                    "201": {
+                        "description": "Resource created successfully"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -287,6 +406,12 @@
                 "responses": {
                     "201": {
                         "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -313,21 +438,60 @@
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
         },
-        "/api/v1/airports/direct-connections": {
+        "/api/v1/routes/list": {
             "get": {
                 "tags": [
-                    "Airports"
+                    "Routes"
                 ],
-                "summary": "Get direct connections to/from the airport",
-                "description": "Returns direct connections for a specific airport",
-                "operationId": "getDirectConnections",
+                "summary": "Get list of routes",
+                "description": "Returns list of routes",
+                "operationId": "getRoutesList",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Route"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -346,16 +510,26 @@
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Route"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -363,8 +537,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Update an existing route",
-                "description": "Update an existing route",
+                "summary": "Update an existing route or create a new one if it does not exist",
+                "description": "Update an existing route or create a new one if it does not exist",
                 "operationId": "updateRoute",
                 "parameters": [
                     {
@@ -377,7 +551,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Route object that needs to be updated",
+                    "description": "Route object that needs to be updated or created",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -391,8 +565,14 @@
                     "200": {
                         "description": "Successful operation"
                     },
-                    "404": {
-                        "description": "Not Found"
+                    "201": {
+                        "description": "Resource created successfully"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -427,6 +607,12 @@
                 "responses": {
                     "201": {
                         "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation Error"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -443,7 +629,7 @@
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -453,6 +639,9 @@
                     },
                     "404": {
                         "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -496,22 +685,14 @@
             "Airport": {
                 "title": "Airport",
                 "required": [
-                    "id",
                     "airportname",
                     "city",
                     "country",
-                    "faa",
                     "icao",
                     "tz",
-                    "geo.lat",
-                    "geo.lon",
-                    "geo.alt"
+                    "geo"
                 ],
                 "properties": {
-                    "id": {
-                        "description": "ID of the airport",
-                        "type": "string"
-                    },
                     "airportname": {
                         "description": "Name of the airport",
                         "type": "string"
@@ -533,20 +714,29 @@
                         "type": "string"
                     },
                     "tz": {
-                        "description": "Timezone of the airport",
+                        "description": "Time zone of the airport",
                         "type": "string"
                     },
-                    "geo.lat": {
-                        "description": "Latitude of the airport",
-                        "type": "string"
-                    },
-                    "geo.lon": {
-                        "description": "Longitude of the airport",
-                        "type": "string"
-                    },
-                    "geo.alt": {
-                        "description": "Altitude of the airport",
-                        "type": "string"
+                    "geo": {
+                        "description": "Geographical coordinates of the airport",
+                        "properties": {
+                            "lat": {
+                                "description": "Latitude",
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "lon": {
+                                "description": "Longitude",
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "alt": {
+                                "description": "Altitude",
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object"
                     }
                 },
                 "type": "object"
@@ -554,61 +744,65 @@
             "Route": {
                 "title": "Route",
                 "required": [
-                    "id",
                     "airline",
-                    "source_airport",
-                    "destination_airport",
+                    "airlineid",
+                    "sourceairport",
+                    "destinationairport",
                     "stops",
                     "equipment",
                     "schedule",
                     "distance"
                 ],
                 "properties": {
-                    "id": {
-                        "description": "ID of the route",
-                        "type": "string"
-                    },
                     "airline": {
-                        "description": "Airline operating the route",
+                        "description": "Airline code",
                         "type": "string"
                     },
-                    "source_airport": {
-                        "description": "Source airport",
+                    "airlineid": {
+                        "description": "Airline ID",
                         "type": "string"
                     },
-                    "destination_airport": {
-                        "description": "Destination airport",
+                    "sourceairport": {
+                        "description": "Source airport code",
+                        "type": "string"
+                    },
+                    "destinationairport": {
+                        "description": "Destination airport code",
                         "type": "string"
                     },
                     "stops": {
-                        "description": "Number of stops in the route",
+                        "description": "Number of stops",
                         "type": "integer"
                     },
                     "equipment": {
-                        "description": "Equipment used in the route",
+                        "description": "Equipment used",
                         "type": "string"
                     },
                     "schedule": {
-                        "description": "Schedule details of the route",
-                        "properties": {
-                            "day": {
-                                "description": "Day of the schedule",
-                                "type": "string"
+                        "description": "Flight schedule",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "day": {
+                                    "description": "Day of the flight",
+                                    "type": "integer"
+                                },
+                                "utc": {
+                                    "description": "UTC time of the flight",
+                                    "type": "string"
+                                },
+                                "flight": {
+                                    "description": "Flight number",
+                                    "type": "string"
+                                }
                             },
-                            "utc": {
-                                "description": "UTC time of the schedule",
-                                "type": "string"
-                            },
-                            "flight": {
-                                "description": "Flight number of the schedule",
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
+                            "type": "object"
+                        }
                     },
                     "distance": {
                         "description": "Distance of the route",
-                        "type": "integer"
+                        "type": "number",
+                        "format": "float"
                     }
                 },
                 "type": "object"

@@ -28,12 +28,12 @@ For details on the API, please check the tutorial on the Couchbase Developer Por
 ",
  *     @OA\License(
  *         name="Apache 2.0",
- *         url="http://springdoc.org"
+ *         url="http://www.apache.org/licenses/LICENSE-2.0.html"
  *     )
  * )
  * @OA\Server(
- *     url=L5_SWAGGER_CONST_HOST,
- *     description="API Server"
+ *     url="http://localhost:8000",
+ *     description="Local server"
  * )
  */
 class SwaggerConfig extends ServiceProvider

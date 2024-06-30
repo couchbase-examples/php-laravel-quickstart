@@ -8,6 +8,101 @@ use App\Models\Airport;
 
 class AirportController extends Controller
 {
+    protected $allowedAttributes = [
+        'airportname',
+        'city',
+        'country',
+        'faa',
+        'icao',
+        'tz',
+        'geo'
+    ];
+
+    private function validateRequest(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'airportname' => 'required|string',
+            'city' => 'required|string',
+            'country' => 'required|string',
+            'faa' => 'nullable|string|size:3',
+            'icao' => 'required|string|size:4',
+            'tz' => 'required|string',
+            'geo.lat' => 'required|numeric',
+            'geo.lon' => 'required|numeric',
+            'geo.alt' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+
+        $disallowedAttributes = array_diff(array_keys($request->all()), $this->allowedAttributes);
+        if (!empty($disallowedAttributes)) {
+            return response()->json(['message' => 'Disallowed attributes: ' . implode(', ', $disallowedAttributes)], 422);
+        }
+
+        return null;
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/airports/list",
+     *     operationId="getAirportsList",
+     *     tags={"Airports"},
+     *     summary="Get list of airports",
+     *     description="Returns list of airports",
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         required=false,
+     *         example=0,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=false,
+     *         example=10,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Airport")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     */
+    public function index(Request $request)
+    {
+        try {
+            $offset = $request->query('offset', 0);
+            $limit = $request->query('limit', 10);
+            $airports = Airport::getAllAirports($offset, $limit);
+            if ($airports->isEmpty()) {
+                return response()->json(['message' => 'No airports found'], 404);
+            }
+            return response()->json($airports);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching airports', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * @OA\Get(
      *     path="/api/v1/airports/{id}",
@@ -25,11 +120,16 @@ class AirportController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Airport")
      *     ),
      *     @OA\Response(
      *         response=404,
      *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
@@ -42,7 +142,8 @@ class AirportController extends Controller
             }
             return response()->json($airport);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error fetching airport', 'error' => $e->getMessage()], 500);
+            \Log::error('Error fetching airport', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -69,18 +170,31 @@ class AirportController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function store(Request $request, $id)
     {
+        if ($errorResponse = $this->validateRequest($request)) {
+            return $errorResponse;
+        }
+
         try {
-            $airport = new Airport($request->all());
-            $airport->attributes['id'] = $id;
-            $airport->saveAirport();
+            $data = $request->only($this->allowedAttributes);
+            $airport = new Airport($data);
+            $airport->saveAirport($id);
             return response()->json(['message' => 'Airport created successfully'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Airport not created', 'error' => $e->getMessage()], 500);
+            \Log::error('Error creating airport', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -89,8 +203,8 @@ class AirportController extends Controller
      *     path="/api/v1/airports/{id}",
      *     operationId="updateAirport",
      *     tags={"Airports"},
-     *     summary="Update an existing airport",
-     *     description="Update an existing airport",
+     *     summary="Update an existing airport or create a new one if it does not exist",
+     *     description="Update an existing airport or create a new one if it does not exist",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -100,7 +214,7 @@ class AirportController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-     *         description="Airport object that needs to be updated",
+     *         description="Airport object that needs to be updated or created",
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/Airport")
      *     ),
@@ -109,25 +223,43 @@ class AirportController extends Controller
      *         description="Successful operation"
      *     ),
      *     @OA\Response(
-     *         response=404,
-     *         description="Not Found"
+     *         response=201,
+     *         description="Resource created successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function update(Request $request, $id)
     {
+        if ($errorResponse = $this->validateRequest($request)) {
+            return $errorResponse;
+        }
+
         try {
+            \Log::info('Updating airport', ['id' => $id, 'data' => $request->all()]);
+
+            $data = $request->only($this->allowedAttributes);
             $airport = Airport::findAirport($id);
+
             if ($airport) {
-                $airport = new Airport($request->all());
-                $airport->attributes['id'] = $id;
-                $airport->saveAirport();
-                return response()->json(['message' => 'Airport updated successfully']);
+                $airport->fill($data);
+                $airport->saveAirport($id);
+                return response()->json(['message' => 'Airport updated successfully'], 200);
             } else {
-                return response()->json(['message' => 'Airport not found'], 404);
+                $newAirport = new Airport($data);
+                $newAirport->saveAirport($id);
+                return response()->json(['message' => 'Airport created successfully'], 201);
             }
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Airport not updated', 'error' => $e->getMessage()], 500);
+            \Log::error('Error updating or creating airport', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -153,38 +285,27 @@ class AirportController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function destroy($id)
     {
         try {
-            Airport::destroyAirport($id);
-            return response()->json(['message' => 'Airport deleted successfully']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Airport not deleted', 'error' => $e->getMessage()], 500);
-        }
-    }
+            $airport = Airport::findAirport($id);
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/airports/direct-connections",
-     *     operationId="getDirectConnections",
-     *     tags={"Airports"},
-     *     summary="Get direct connections to/from the airport",
-     *     description="Returns direct connections for a specific airport",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation"
-     *     )
-     * )
-     */
-    public function directConnections()
-    {
-        try {
-            // Implement this method based on your business logic
+            if (!$airport) {
+                return response()->json(['message' => 'Airport not found'], 404);
+            }
+
+            Airport::destroyAirport($id);
+            return response()->json(['message' => 'Airport deleted successfully'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error fetching direct connections', 'error' => $e->getMessage()], 500);
+            \Log::error('Error deleting airport', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 }

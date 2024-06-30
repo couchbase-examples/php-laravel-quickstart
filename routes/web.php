@@ -20,6 +20,7 @@ Route::prefix('api/v1')->group(function () {
     Route::get('airlines/to-airport', [AirlineController::class, 'toAirport']);
 
     // Airports routes
+    Route::get('airports/list', [AirportController::class, 'index']);
     Route::get('airports/{id}', [AirportController::class, 'show']);
     Route::post('airports/{id}', [AirportController::class, 'store']);
     Route::put('airports/{id}', [AirportController::class, 'update']);
@@ -27,6 +28,7 @@ Route::prefix('api/v1')->group(function () {
     Route::get('airports/direct-connections', [AirportController::class, 'directConnections']);
 
     // Routes routes
+    Route::get('routes/list', [RouteController::class, 'index']);
     Route::get('routes/{id}', [RouteController::class, 'show']);
     Route::post('routes/{id}', [RouteController::class, 'store']);
     Route::put('routes/{id}', [RouteController::class, 'update']);

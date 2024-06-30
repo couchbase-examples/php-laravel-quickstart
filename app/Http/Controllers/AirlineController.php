@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -8,6 +7,36 @@ use App\Models\Airline;
 
 class AirlineController extends Controller
 {
+    protected $allowedAttributes = [
+        'callsign',
+        'country',
+        'iata',
+        'icao',
+        'name'
+    ];
+
+    private function validateRequest(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'callsign' => 'required|string',
+            'country' => 'required|string',
+            'iata' => 'required|string|size:2',
+            'icao' => 'required|string|size:3',
+            'name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+
+        $disallowedAttributes = array_diff(array_keys($request->all()), $this->allowedAttributes);
+        if (!empty($disallowedAttributes)) {
+            return response()->json(['message' => 'Disallowed attributes: ' . implode(', ', $disallowedAttributes)], 422);
+        }
+
+        return null;
+    }
+
     /**
      * @OA\Get(
      *     path="/api/v1/airlines/list",
@@ -19,6 +48,7 @@ class AirlineController extends Controller
      *         name="offset",
      *         in="query",
      *         required=false,
+     *         example=0,
      *         @OA\Schema(
      *             type="integer"
      *         )
@@ -27,29 +57,53 @@ class AirlineController extends Controller
      *         name="limit",
      *         in="query",
      *         required=false,
+     *         example=10,
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         name="country",
+     *         in="query",
+     *         required=false,
+     *         example="United States",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Airline")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
      *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function index(Request $request)
     {
-        $offset = $request->query('offset', 0);
-        $limit = $request->query('limit', 10);
-        $airlines = Airline::getAll($offset, $limit);
-        if ($airlines->isEmpty()) {
-            return response()->json(['message' => 'No airlines found'], 404);
+        try {
+            $offset = $request->query('offset', 0);
+            $limit = $request->query('limit', 10);
+            $country = $request->query('country');
+            $airlines = Airline::getAllAirlinesByCountry($country, $offset, $limit);
+            if ($airlines->isEmpty()) {
+                return response()->json(['message' => 'No airlines found'], 404);
+            }
+            return response()->json($airlines);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching airlines', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
-        return response()->json($airlines);
     }
 
     /**
@@ -69,21 +123,31 @@ class AirlineController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Airline")
      *     ),
      *     @OA\Response(
      *         response=404,
      *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function show($id)
     {
-        $airline = Airline::findAirline($id);
-        if (!$airline) {
-            return response()->json(['message' => 'Airline not found'], 404);
+        try {
+            $airline = Airline::findAirline($id);
+            if (!$airline) {
+                return response()->json(['message' => 'Airline not found'], 404);
+            }
+            return response()->json($airline);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching airline', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
-        return response()->json($airline);
     }
 
     /**
@@ -109,18 +173,31 @@ class AirlineController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function store(Request $request, $id)
     {
+        if ($errorResponse = $this->validateRequest($request)) {
+            return $errorResponse;
+        }
+
         try {
-            $airline = new Airline($request->all());
-            $airline->attributes['id'] = $id;
-            $airline->saveAirline();
+            $data = $request->only($this->allowedAttributes);
+            $airline = new Airline($data);
+            $airline->saveAirline($id);
             return response()->json(['message' => 'Airline created successfully'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Airline not created', 'error' => $e->getMessage()], 500);
+            \Log::error('Error creating airline', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -129,8 +206,8 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/{id}",
      *     operationId="updateAirline",
      *     tags={"Airlines"},
-     *     summary="Update an existing airline",
-     *     description="Update an existing airline",
+     *     summary="Update an existing airline or create a new one if it does not exist",
+     *     description="Update an existing airline or create a new one if it does not exist",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -140,7 +217,7 @@ class AirlineController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-     *         description="Airline object that needs to be updated",
+     *         description="Airline object that needs to be updated or created",
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/Airline")
      *     ),
@@ -149,21 +226,43 @@ class AirlineController extends Controller
      *         description="Successful operation"
      *     ),
      *     @OA\Response(
-     *         response=404,
-     *         description="Not Found"
+     *         response=201,
+     *         description="Resource created successfully"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function update(Request $request, $id)
     {
-        $airline = Airline::findAirline($id);
-        if ($airline) {
-            $airline = new Airline($request->all());
-            $airline->attributes['id'] = $id;
-            $airline->saveAirline();
-            return response()->json(['message' => 'Airline updated successfully']);
-        } else {
-            return response()->json(['message' => 'Airline not found'], 404);
+        if ($errorResponse = $this->validateRequest($request)) {
+            return $errorResponse;
+        }
+
+        try {
+            \Log::info('Updating airline', ['id' => $id, 'data' => $request->all()]);
+
+            $data = $request->only($this->allowedAttributes);
+            $airline = Airline::findAirline($id);
+
+            if ($airline) {
+                $airline->fill($data);
+                $airline->saveAirline($id);
+                return response()->json(['message' => 'Airline updated successfully'], 200);
+            } else {
+                $newAirline = new Airline($data);
+                $newAirline->saveAirline($id);
+                return response()->json(['message' => 'Airline created successfully'], 201);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error updating or creating airline', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -189,13 +288,28 @@ class AirlineController extends Controller
      *     @OA\Response(
      *         response=404,
      *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function destroy($id)
     {
-        Airline::destroyAirline($id);
-        return response()->json(['message' => 'Airline deleted successfully']);
+        try {
+            $airline = Airline::findAirline($id);
+
+            if (!$airline) {
+                return response()->json(['message' => 'Airline not found'], 404);
+            }
+
+            Airline::destroyAirline($id);
+            return response()->json(['message' => 'Airline deleted successfully'], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting airline', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -208,11 +322,21 @@ class AirlineController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function toAirport()
     {
         // Implement this method based on your business logic
+        try {
+            // Your implementation here
+        } catch (\Exception $e) {
+            \Log::error('Error fetching airlines to airport', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
     }
 }
