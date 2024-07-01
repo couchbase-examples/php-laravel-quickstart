@@ -308,4 +308,89 @@ class AirportController extends Controller
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/airports/direct-connections",
+     *     operationId="getDirectConnections",
+     *     tags={"Airports"},
+     *     summary="Get airports with direct flights from a target airport",
+     *     description="Returns list of airports that have direct flights from a target airport",
+     *     @OA\Parameter(
+     *         name="sourceAirportCode",
+     *         in="query",
+     *         required=true,
+     *         example="ATL",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         required=false,
+     *         example=0,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=false,
+     *         example=10,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     */
+    public function getDirectConnections(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'sourceAirportCode' => 'required|string',
+            'offset' => 'integer',
+            'limit' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $sourceAirportCode = $request->query('sourceAirportCode');
+            $offset = $request->query('offset', 0);
+            $limit = $request->query('limit', 10);
+
+            $airports = Airport::getDirectConnections($sourceAirportCode, $offset, $limit);
+            if ($airports->isEmpty()) {
+                return response()->json(['message' => 'No direct connections found'], 404);
+            }
+
+            $formattedAirports = $airports->map(function ($airport) {
+                return $airport['destinationairport'];
+            });
+
+            return response()->json($formattedAirports);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching direct connections', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

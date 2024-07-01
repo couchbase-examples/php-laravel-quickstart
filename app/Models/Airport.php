@@ -139,4 +139,24 @@ class Airport extends Model
             throw $e;
         }
     }
+
+    public static function getDirectConnections($sourceAirportCode, $offset = 0, $limit = 10)
+    {
+        $instance = new static;
+        $query = "
+        SELECT DISTINCT route.destinationairport
+        FROM `travel-sample`.`inventory`.`route` AS route
+        JOIN `travel-sample`.`inventory`.`airport` AS airport ON route.sourceairport = airport.faa
+        WHERE airport.faa = '$sourceAirportCode' AND route.stops = 0
+        LIMIT $limit OFFSET $offset";
+
+        try {
+            $result = $instance->bucket->scope('inventory')->query($query);
+            $rows = $result->rows();
+            return collect($rows);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching direct connections: ' . $e->getMessage());
+            return collect([]);
+        }
+    }
 }

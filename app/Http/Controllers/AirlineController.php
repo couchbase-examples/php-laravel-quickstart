@@ -314,14 +314,49 @@ class AirlineController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/api/v1/airlines/to-airport",
+     *     path="/api/v1/airlines/to-airport/{destinationAirportCode}",
      *     operationId="getAirlinesToAirport",
      *     tags={"Airlines"},
      *     summary="Get airlines flying to a destination airport",
      *     description="Returns list of airlines flying to a specific airport",
+     *     @OA\Parameter(
+     *         name="destinationAirportCode",
+     *         in="path",
+     *         required=true,
+     *         example="ATL",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         required=false,
+     *         example=0,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=false,
+     *         example=10,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation"
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Airline")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not Found"
      *     ),
      *     @OA\Response(
      *         response=500,
@@ -329,11 +364,25 @@ class AirlineController extends Controller
      *     )
      * )
      */
-    public function toAirport()
+    public function toAirport(Request $request, $destinationAirportCode)
     {
-        // Implement this method based on your business logic
+        $validator = \Validator::make(['destinationAirportCode' => $destinationAirportCode], [
+            'destinationAirportCode' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+
         try {
-            // Your implementation here
+            $offset = $request->query('offset', 0);
+            $limit = $request->query('limit', 10);
+
+            $airlines = Airline::getAirlinesToAirport($destinationAirportCode, $offset, $limit);
+            if ($airlines->isEmpty()) {
+                return response()->json(['message' => 'No airlines found'], 404);
+            }
+            return response()->json($airlines);
         } catch (\Exception $e) {
             \Log::error('Error fetching airlines to airport', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);

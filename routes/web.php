@@ -13,19 +13,19 @@ Route::get('/', function () {
 Route::prefix('api/v1')->group(function () {
     // Airlines routes
     Route::get('airlines/list', [AirlineController::class, 'index']);
+    Route::get('airlines/to-airport/{destinationAirportCode}', [AirlineController::class, 'toAirport']);
     Route::get('airlines/{id}', [AirlineController::class, 'show']);
     Route::post('airlines/{id}', [AirlineController::class, 'store']);
     Route::put('airlines/{id}', [AirlineController::class, 'update']);
     Route::delete('airlines/{id}', [AirlineController::class, 'destroy']);
-    Route::get('airlines/to-airport', [AirlineController::class, 'toAirport']);
 
     // Airports routes
     Route::get('airports/list', [AirportController::class, 'index']);
+    Route::get('airports/direct-connections', [AirportController::class, 'getDirectConnections']);
     Route::get('airports/{id}', [AirportController::class, 'show']);
     Route::post('airports/{id}', [AirportController::class, 'store']);
     Route::put('airports/{id}', [AirportController::class, 'update']);
     Route::delete('airports/{id}', [AirportController::class, 'destroy']);
-    Route::get('airports/direct-connections', [AirportController::class, 'directConnections']);
 
     // Routes routes
     Route::get('routes/list', [RouteController::class, 'index']);

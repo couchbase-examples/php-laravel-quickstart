@@ -226,7 +226,7 @@
                 }
             }
         },
-        "/api/v1/airlines/to-airport": {
+        "/api/v1/airlines/to-airport/{destinationAirportCode}": {
             "get": {
                 "tags": [
                     "Airlines"
@@ -234,9 +234,51 @@
                 "summary": "Get airlines flying to a destination airport",
                 "description": "Returns list of airlines flying to a specific airport",
                 "operationId": "getAirlinesToAirport",
+                "parameters": [
+                    {
+                        "name": "destinationAirportCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "ATL"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Airline"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "500": {
                         "description": "Internal Server Error"
@@ -435,6 +477,66 @@
                 "responses": {
                     "200": {
                         "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/v1/airports/direct-connections": {
+            "get": {
+                "tags": [
+                    "Airports"
+                ],
+                "summary": "Get airports with direct flights from a target airport",
+                "description": "Returns list of airports that have direct flights from a target airport",
+                "operationId": "getDirectConnections",
+                "parameters": [
+                    {
+                        "name": "sourceAirportCode",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "ATL"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 0
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found"

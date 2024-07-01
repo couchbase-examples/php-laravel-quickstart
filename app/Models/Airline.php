@@ -114,4 +114,27 @@ class Airline extends Model
         }
     }
 
+    public static function getAirlinesToAirport($destinationAirportCode, $offset = 0, $limit = 10)
+    {
+        $instance = new static;
+        $query = "
+        SELECT air.callsign, air.country, air.iata, air.icao, META(air).id AS id, air.name, air.type
+        FROM (
+            SELECT DISTINCT route.airlineid AS airlineId
+            FROM `travel-sample`.`inventory`.`route` AS route
+            WHERE route.destinationairport = '$destinationAirportCode'
+        ) AS subquery
+        JOIN `travel-sample`.`inventory`.`airline` AS air ON META(air).id = subquery.airlineId
+        LIMIT $limit OFFSET $offset";
+
+        try {
+            $result = $instance->bucket->scope('inventory')->query($query);
+            $rows = $result->rows();
+            return collect($rows);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching airlines to airport: ' . $e->getMessage());
+            return collect([]);
+        }
+    }
+
 }
