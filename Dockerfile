@@ -1,43 +1,26 @@
-# Use an official PHP runtime as a parent image
-FROM php:8.1-fpm
+# Use the PHP 8.2 base image
+FROM php:8.2
 
-# Set the working directory
-WORKDIR /var/www
+# Update package lists and install required dependencies
+RUN apt-get update -y && apt-get install -y openssl zip unzip libonig-dev
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    libxml2-dev
+# Install Composer globally
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install PHP extensions required by Laravel
+RUN docker-php-ext-install pdo mbstring
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Set the working directory to /app
+WORKDIR /app
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy the entire project directory into the container at /app
+COPY . /app
 
-# Copy existing application directory contents
-COPY . /var/www
+# Install project dependencies using Composer
+RUN composer install
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Set the default command to run when the container starts
+CMD php artisan serve --host=0.0.0.0 --port=8000
 
-# Change current user to www
-USER www-data
-
-# Expose port 8000 and start php-fpm server
+# Expose port 8000 to allow external access
 EXPOSE 8000
-CMD ["php-fpm"]
