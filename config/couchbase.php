@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'host' => env('COUCHBASE_HOST', 'couchbase://127.0.0.1'),
-    'username' => env('COUCHBASE_USER', 'kaustav'),
-    'password' => env('COUCHBASE_PASSWORD', 'password'),
-    'bucket' => env('COUCHBASE_BUCKET', 'travel-sample'),
+    'host' => env('DB_CONN_STR', 'couchbase://127.0.0.1'),
+    'username' => env('DB_USERNAME', 'Administrator'),
+    'password' => env('DB_PASSWORD', 'password'),
+    'bucket' => env('DB_BUCKET', 'travel-sample'),
 ];

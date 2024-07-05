@@ -31,13 +31,6 @@ return [
 
     'connections' => [
 
-        'couchbase' => [
-            'driver'        => 'couchbase',
-            'host'          => 'couchbase://' . env('CB_HOST', 'db'),
-            'user'          => env('CB_USER', 'Administrator'),
-            'password'      => env('CB_PSWD', 'password'),
-            'bucket'      => env('BUCKET', 'travel-sample'),
-        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
