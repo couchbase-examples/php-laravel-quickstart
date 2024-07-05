@@ -1,27 +1,26 @@
-# Quickstart in Couchbase with FastAPI and Python
+# Quickstart in Couchbase with PHP using Laravel
 
-#### REST API using Couchbase Capella in Python using FastAPI
+#### REST API using Couchbase Capella in PHP using Laravel
 
-Often, the first step developers do after creating their database is to create a REST API that can perform Create, Read, Update, and Delete (CRUD) operations for that database. This repo is designed to teach you and give you a starter project (in Python using FastAPI) to generate such a REST API. After you have installed travel-sample bucket in your database, you can run this application which is a REST API with Swagger documentation so that you can learn:
+Often, the first step developers do after creating their database is to create a REST API that can perform Create, Read, Update, and Delete (CRUD) operations for that database. This repo is designed to teach you and give you a starter project (in PHP using Laravel) to generate such a REST API. After you have installed travel-sample bucket in your database, you can run this application which is a REST API with Swagger documentation so that you can learn:
 
-1. How to create, read, update, and delete documents using [Key Value operations](https://docs.couchbase.com/python-sdk/current/howtos/kv-operations.html) (KV operations). KV operations are unique to couchbase and provide super fast (think microseconds) queries.
-2. How to write simple parametrized [SQL++ queries](https://docs.couchbase.com/python-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
+1. How to create, read, update, and delete documents using [Key Value operations](https://docs.couchbase.com/php-sdk/current/howtos/kv-operations.html) (KV operations). KV operations are unique to couchbase and provide super fast (think microseconds) queries.
+2. How to write simple parametrized [N1QL queries](https://docs.couchbase.com/php-sdk/current/howtos/n1ql-queries-with-sdk.html) using the built-in travel-sample bucket.
 
-Full documentation for the tutorial can be found on the [Couchbase Developer Portal](https://developer.couchbase.com/tutorial-quickstart-fastapi-python/).
+Full documentation for the tutorial can be found on the [Couchbase Developer Portal](https://developer.couchbase.com/tutorial-quickstart-laravel-php/).
 
-If you are looking for a quickstart using [Flask](https://flask.palletsprojects.com/en/3.0.x/), you can find it in this [repo](https://github.com/couchbase-examples/python-quickstart).
 
 ## Prerequisites
 
 To run this prebuilt project, you will need:
 
-- [Couchbase Capella](https://www.couchbase.com/products/capella/) cluster with [travel-sample](https://docs.couchbase.com/python-sdk/current/ref/travel-app-data-model.html) bucket loaded.
-  - To run this tutorial using a self managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
-- [Python](https://www.python.org/downloads/) 3.9 or higher installed
-  - Ensure that the Python version is [compatible](https://docs.couchbase.com/python-sdk/current/project-docs/compatibility.html#python-version-compat) with the Couchbase SDK.
+- [Couchbase Capella](https://www.couchbase.com/products/capella/) cluster with [travel-sample](https://docs.couchbase.com/php-sdk/current/ref/travel-app-data-model.html) bucket loaded.
+    - To run this tutorial using a self managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
+- [PHP](https://www.php.net/downloads.php) 8.2 or higher installed
+    - Ensure that the PHP version is [compatible](https://docs.couchbase.com/php-sdk/current/project-docs/compatibility.html#php-version-compat) with the Couchbase SDK.
 - Loading Travel Sample Bucket
-  If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
-  - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
+    If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
+    - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
 
 ## App Setup
 
@@ -30,18 +29,16 @@ We will walk through the different steps required to get the application running
 ### Cloning Repo
 
 ```shell
-git clone https://github.com/couchbase-examples/python-quickstart-fastapi.git
+git clone https://github.com/couchbase-examples/php-laravel-quickstart.git
 ```
 
 ### Install Dependencies
 
-The dependencies for the application are specified in the `requirements.txt` file in the root folder. Dependencies can be installed through `pip` the default package manager for Python.
+The dependencies for the application are specified in the `composer.json` file in the root folder. Dependencies can be installed using [Composer](https://getcomposer.org/), the default package manager for PHP.
 
 ```sh
-python -m pip install -r requirements.txt
+composer install
 ```
-
-> Note: If your Python is not symbolically linked to python3, you need to run all commands using `python3` instead of `python`.
 
 ### Setup Database Configuration
 
@@ -73,7 +70,7 @@ DB_PASSWORD=<password_for_user>
 At this point, we have installed the dependencies, loaded the travel-sample data and configured the application with the credentials. The application is now ready and you can run it.
 
 ```sh
-uvicorn app.main:app --reload
+php artisan serve
 ```
 
 ### Using Docker
@@ -81,13 +78,14 @@ uvicorn app.main:app --reload
 - Build the Docker image
 
 ```sh
-docker build -t couchbase-fastapi-quickstart .
+docker build -t couchbase-laravel-quickstart .
 ```
 
 - Run the Docker image
 
 ```sh
-docker run -it --env-file app/.env -p 8000:8000 couchbase-fastapi-quickstart
+# docker run -it --env-file app/.env -p 8000:8000 couchbase-laravel-quickstart
+docker run -p 8000:8000 couchbase-laravel-quickstart
 ```
 
 > Note: The `.env` file has the connection information to connect to your Capella cluster. These will be part of the environment variables in the Docker container.
@@ -107,25 +105,33 @@ The application will run on port 8000 of your local machine (http://localhost:80
 To run the integration tests, use the following commands:
 
 ```sh
-python -m pytest
+php artisan test
 ```
 
 ## Appendix
 
 ### Data Model
 
-For this quickstart, we use three collections, `airport`, `airline` and `routes` that contain sample airports, airlines and airline routes respectively. The routes collection connects the airports and airlines as seen in the figure below. We use these connections in the quickstart to generate airports that are directly connected and airlines connecting to a destination airport. Note that these are just examples to highlight how you can use SQL++ queries to join the collections.
+For this quickstart, we use three collections, `airport`, `airline` and `routes` that contain sample airports, airlines and airline routes respectively. The routes collection connects the airports and airlines as seen in the figure below. We use these connections in the quickstart to generate airports that are directly connected and airlines connecting to a destination airport. Note that these are just examples to highlight how you can use N1QL queries to join the collections.
 
 ![travel sample data model](images/travel_sample_data_model.png)
 
 ### Extending API by Adding New Entity
 
-If you would like to add another entity to the APIs, these are the steps to follow:
 
-- Create the new entity (collection) in the Couchbase bucket. You can create the collection using the [SDK](https://docs.couchbase.com/sdk-api/couchbase-python-client/couchbase_api/couchbase_management.html#couchbase.management.collections.CollectionManager.create_collection) or via the [Couchbase Server interface](https://docs.couchbase.com/cloud/n1ql/n1ql-language-reference/createcollection.html).
-- Define the routes in a new file in the `routers` folder similar to the existing routes like `airport.py`.
-- Add the new routes to the application in `app.py`.
-- Add the tests for the new routes in a new file in the `tests` folder similar to `test_airport.py`.
+To extend your Laravel API by adding a new entity using Couchbase:
+
+- Create a model for the new entity (e.g., Route) using `php artisan make:model Route` and define the necessary attributes.
+
+- Generate a controller for the new entity with `php artisan make:controller RouteController` and implement CRUD operations, following the structure and logic used in the AirlineController.
+
+- Update your API routes in `routes/api.php` to include routes for the new entity, ensuring that each route corresponds to a method in the RouteController.
+
+- Ensure your Couchbase service configuration in `app/Providers/CouchbaseServiceProvider.php` includes separate collections for each entity (e.g., routeCollection) to manage Couchbase connections and data storage effectively.
+
+- Develop test cases for the new entity using `php artisan make:test RouteTest`, writing tests for each API endpoint to confirm correct functionality.
+
+- Update your Swagger documentation or any API documentation tools to include annotations for the new Route endpoints, ensuring that the documentation accurately reflects the newly added entity and its associated operations, similar to how the Airline entity is documented.
 
 ### Running Self Managed Couchbase Cluster
 
@@ -133,7 +139,7 @@ If you are running this quickstart with a self managed Couchbase cluster, you ne
 
 You need to update the connection string and the credentials in the `.env` file in the source folder.
 
-> Note: Couchbase Server version 7 or higher must be installed and running prior to running the FastAPI app.
+> Note: Couchbase Server version 7 or higher must be installed and running prior to running the Laravel app.
 
 ### Swagger Documentation
 
