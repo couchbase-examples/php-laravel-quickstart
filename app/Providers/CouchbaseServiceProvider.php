@@ -45,6 +45,11 @@ class CouchbaseServiceProvider extends ServiceProvider
             $bucket = $app->make('couchbase.bucket');
             return $bucket->scope('inventory')->collection('route');
         });
+
+        $this->app->singleton('couchbase.hotelCollection', function ($app) {
+            $bucket = $app->make('couchbase.bucket');
+            return $bucket->scope('inventory')->collection('hotel');
+        });
     }
 
     /**

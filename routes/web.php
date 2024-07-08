@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AirlineController;
 use App\Http\Controllers\AirportController;
 use App\Http\Controllers\RouteController;
+use App\Http\Controllers\HotelController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,4 +34,8 @@ Route::prefix('api/v1')->group(function () {
     Route::post('routes/{id}', [RouteController::class, 'store']);
     Route::put('routes/{id}', [RouteController::class, 'update']);
     Route::delete('routes/{id}', [RouteController::class, 'destroy']);
+
+    // Hotels routes
+    Route::get('hotels/autocomplete', [HotelController::class, 'search']);
+    Route::post('hotels/filter', [HotelController::class, 'filter']);
 });
