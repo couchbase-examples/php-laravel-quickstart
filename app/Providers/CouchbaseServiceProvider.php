@@ -17,11 +17,11 @@ class CouchbaseServiceProvider extends ServiceProvider
     {
         $this->app->singleton('couchbase.cluster', function ($app) {
             $config = $app['config']['couchbase'];
-            
+
             $options = new ClusterOptions();
             $options->credentials($config['username'], $config['password']);
             $options->applyProfile('wan_development');
-            
+
             return new Cluster($config['host'], $options);
         });
 
@@ -30,6 +30,7 @@ class CouchbaseServiceProvider extends ServiceProvider
             $config = $app['config']['couchbase'];
             return $cluster->bucket($config['bucket']);
         });
+
 
         $this->app->singleton('couchbase.airlineCollection', function ($app) {
             $bucket = $app->make('couchbase.bucket');

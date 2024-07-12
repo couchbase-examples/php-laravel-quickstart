@@ -547,6 +547,130 @@
                 }
             }
         },
+        "/api/v1/hotels/autocomplete": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Get hotel name suggestions",
+                "description": "Returns hotel name suggestions based on the search term",
+                "operationId": "searchHotels",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/api/v1/hotels/filter": {
+            "get": {
+                "tags": [
+                    "Hotels"
+                ],
+                "summary": "Filter hotels based on criteria",
+                "description": "Returns a list of hotels based on filter criteria",
+                "operationId": "filterHotels",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "state",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Hotel"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/api/v1/routes/list": {
             "get": {
                 "tags": [
@@ -839,6 +963,205 @@
                             }
                         },
                         "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Hotel": {
+                "title": "Hotel",
+                "required": [
+                    "title",
+                    "name",
+                    "country",
+                    "city"
+                ],
+                "properties": {
+                    "title": {
+                        "description": "Title of the hotel",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "Name of the hotel",
+                        "type": "string"
+                    },
+                    "address": {
+                        "description": "Address of the hotel",
+                        "type": "string"
+                    },
+                    "directions": {
+                        "description": "Directions to the hotel",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "description": "Phone number of the hotel",
+                        "type": "string"
+                    },
+                    "tollfree": {
+                        "description": "Toll-free number of the hotel",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "description": "Email address of the hotel",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "fax": {
+                        "description": "Fax number of the hotel",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "url": {
+                        "description": "URL of the hotel's website",
+                        "type": "string",
+                        "format": "url"
+                    },
+                    "checkin": {
+                        "description": "Check-in time",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "checkout": {
+                        "description": "Check-out time",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "price": {
+                        "description": "Price of the stay",
+                        "type": "string"
+                    },
+                    "geo": {
+                        "properties": {
+                            "lat": {
+                                "description": "Latitude of the hotel location",
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "lon": {
+                                "description": "Longitude of the hotel location",
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "accuracy": {
+                                "description": "Accuracy of the geolocation",
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "type": {
+                        "description": "Type of the establishment (e.g., hotel)",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "ID of the hotel",
+                        "type": "integer"
+                    },
+                    "country": {
+                        "description": "Country where the hotel is located",
+                        "type": "string"
+                    },
+                    "city": {
+                        "description": "City where the hotel is located",
+                        "type": "string"
+                    },
+                    "state": {
+                        "description": "State where the hotel is located",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "reviews": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "content": {
+                                    "description": "Content of the review",
+                                    "type": "string"
+                                },
+                                "ratings": {
+                                    "properties": {
+                                        "Service": {
+                                            "description": "Service rating",
+                                            "type": "integer"
+                                        },
+                                        "Cleanliness": {
+                                            "description": "Cleanliness rating",
+                                            "type": "integer"
+                                        },
+                                        "Overall": {
+                                            "description": "Overall rating",
+                                            "type": "integer"
+                                        },
+                                        "Value": {
+                                            "description": "Value rating",
+                                            "type": "integer"
+                                        },
+                                        "Sleep Quality": {
+                                            "description": "Sleep Quality rating",
+                                            "type": "integer"
+                                        },
+                                        "Rooms": {
+                                            "description": "Rooms rating",
+                                            "type": "integer"
+                                        },
+                                        "Location": {
+                                            "description": "Location rating",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "author": {
+                                    "description": "Author of the review",
+                                    "type": "string"
+                                },
+                                "date": {
+                                    "description": "Date of the review",
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "public_likes": {
+                        "description": "List of public likes",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "vacancy": {
+                        "description": "Vacancy status",
+                        "type": "boolean"
+                    },
+                    "description": {
+                        "description": "Description of the hotel",
+                        "type": "string"
+                    },
+                    "alias": {
+                        "description": "Alias of the hotel",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "pets_ok": {
+                        "description": "Whether pets are allowed",
+                        "type": "boolean"
+                    },
+                    "free_breakfast": {
+                        "description": "Whether free breakfast is offered",
+                        "type": "boolean"
+                    },
+                    "free_internet": {
+                        "description": "Whether free internet is offered",
+                        "type": "boolean"
+                    },
+                    "free_parking": {
+                        "description": "Whether free parking is offered",
+                        "type": "boolean"
                     }
                 },
                 "type": "object"

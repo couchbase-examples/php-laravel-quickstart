@@ -37,5 +37,5 @@ Route::prefix('api/v1')->group(function () {
 
     // Hotels routes
     Route::get('hotels/autocomplete', [HotelController::class, 'search']);
-    Route::post('hotels/filter', [HotelController::class, 'filter']);
+    Route::get('hotels/filter', [HotelController::class, 'filter']);
 });
