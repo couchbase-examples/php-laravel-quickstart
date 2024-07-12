@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
  
+      - name: Run Migration
+        run: php artisan migrate
+
       - name: Run tests
         run: php artisan test
 
