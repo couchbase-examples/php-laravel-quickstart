@@ -245,7 +245,6 @@ class RouteController extends Controller
         }
 
         try {
-            \Log::info('Updating route', ['id' => $id, 'data' => $request->all()]);
 
             $data = $request->only($this->allowedAttributes);
             $route = Route::findRoute($id);
