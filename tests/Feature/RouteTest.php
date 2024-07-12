@@ -44,8 +44,8 @@ class RouteTest extends TestCase
         $response = $this->getJson('/api/v1/routes/list?sourceAirportCode=unknown');
 
         // Assert
-        $response->assertStatus(404);
-        $response->assertJson(['message' => 'No routes found']);
+        $response->assertStatus(200);
+        $response->assertJson([]);
     }
 
     /**

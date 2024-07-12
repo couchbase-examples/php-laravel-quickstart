@@ -31,9 +31,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
-
+ 
       - name: Run tests
-        run: vendor/bin/phpunit --coverage-text --colors=never
+        run: php artisan test
 
       - name: Report Status
         if: always()

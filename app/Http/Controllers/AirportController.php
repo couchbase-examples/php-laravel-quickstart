@@ -380,7 +380,7 @@ class AirportController extends Controller
 
             $airports = Airport::getDirectConnections($sourceAirportCode, $offset, $limit);
             if ($airports->isEmpty()) {
-                return response()->json(['message' => 'No direct connections found'], 404);
+                return response()->json(['message' => 'No direct flight connections found'], 404);
             }
 
             $formattedAirports = $airports->map(function ($airport) {
