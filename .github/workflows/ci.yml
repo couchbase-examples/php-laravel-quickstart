@@ -32,6 +32,13 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
  
+      - name: Install Couchbase PHP extension
+        run: sudo pecl install couchbase
+
+      - name: Enable Couchbase PHP extension
+        run: echo "extension=couchbase.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+
       - name: Run Migration
         run: php artisan migrate --force
 
