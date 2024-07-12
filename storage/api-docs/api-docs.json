@@ -552,8 +552,8 @@
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Get hotel name suggestions",
-                "description": "Returns hotel name suggestions based on the search term",
+                "summary": "Search for hotels by name",
+                "description": "Returns a list of hotels that match the provided name",
                 "operationId": "searchHotels",
                 "parameters": [
                     {
@@ -567,20 +567,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation Error",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation Error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request data"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The name field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -590,48 +612,54 @@
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Filter hotels based on criteria",
-                "description": "Returns a list of hotels based on filter criteria",
+                "summary": "Filter hotels by various attributes",
+                "description": "Returns a list of hotels that match the provided filters",
                 "operationId": "filterHotels",
                 "parameters": [
                     {
-                        "name": "name",
+                        "name": "hotel[name]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "title",
+                        "name": "hotel[title]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "description",
+                        "name": "hotel[description]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "country",
+                        "name": "hotel[country]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "city",
+                        "name": "hotel[city]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "state",
+                        "name": "hotel[state]",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -639,6 +667,7 @@
                     {
                         "name": "offset",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer"
                         }
@@ -646,6 +675,7 @@
                     {
                         "name": "limit",
                         "in": "query",
+                        "required": false,
                         "schema": {
                             "type": "integer"
                         }
@@ -653,20 +683,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful operation",
+                        "description": "Successful operation"
+                    },
+                    "422": {
+                        "description": "Validation Error",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Hotel"
-                                    }
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Validation Error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid request data"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The name field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error"
                     }
                 }
             }

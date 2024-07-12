@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 
 class HotelController extends Controller
@@ -12,37 +13,57 @@ class HotelController extends Controller
      *     path="/api/v1/hotels/autocomplete",
      *     operationId="searchHotels",
      *     tags={"Hotels"},
-     *     summary="Get hotel name suggestions",
-     *     description="Returns hotel name suggestions based on the search term",
+     *     summary="Search for hotels by name",
+     *     description="Returns a list of hotels that match the provided name",
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
      *         required=true,
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(type="array", @OA\Items(type="string"))
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation Error"),
+     *             @OA\Property(property="message", type="string", example="Invalid request data"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(property="name", type="array", @OA\Items(type="string", example="The name field is required."))
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Internal server error"
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function search(Request $request)
     {
-        $name = $request->query('name');
-        if (!$name) {
-            return response()->json(['error' => 'name query parameter is required'], 400);
+        if (!$request->has('name')) {
+            return response()->json([
+                'error' => 'Validation Error',
+                'message' => 'Invalid request data',
+                'errors' => [
+                    'name' => ['The name query parameter is required.']
+                ]
+            ], 422);
         }
 
         try {
-            $hotels = Hotel::searchByName($name);
+            $hotels = Hotel::searchByName($request->query('name'));
             return response()->json($hotels, 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Internal server error', 'message' => $e->getMessage()], 500);
+            \Log::error('Error fetching hotels', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -51,70 +72,107 @@ class HotelController extends Controller
      *     path="/api/v1/hotels/filter",
      *     operationId="filterHotels",
      *     tags={"Hotels"},
-     *     summary="Filter hotels based on criteria",
-     *     description="Returns a list of hotels based on filter criteria",
+     *     summary="Filter hotels by various attributes",
+     *     description="Returns a list of hotels that match the provided filters",
      *     @OA\Parameter(
-     *         name="name",
+     *         name="hotel[name]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
-     *         name="title",
+     *         name="hotel[title]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
-     *         name="description",
+     *         name="hotel[description]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
-     *         name="country",
+     *         name="hotel[country]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
-     *         name="city",
+     *         name="hotel[city]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
-     *         name="state",
+     *         name="hotel[state]",
      *         in="query",
-     *         @OA\Schema(type="string")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
      *     ),
      *     @OA\Parameter(
      *         name="offset",
      *         in="query",
-     *         @OA\Schema(type="integer")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
      *     ),
      *     @OA\Parameter(
      *         name="limit",
      *         in="query",
-     *         @OA\Schema(type="integer")
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Hotel"))
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Validation Error"),
+     *             @OA\Property(property="message", type="string", example="Invalid request data"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(property="name", type="array", @OA\Items(type="string", example="The name field is required."))
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=500,
-     *         description="Internal server error"
+     *         description="Internal Server Error"
      *     )
      * )
      */
     public function filter(Request $request)
     {
-        $filters = $request->only(['name', 'title', 'description', 'country', 'city', 'state']);
-        $offset = $request->input('offset', 0);
-        $limit = $request->input('limit', 10);
-
         try {
+            $filters = $request->only(['name', 'title', 'description', 'country', 'city', 'state']);
+            $offset = $request->input('offset', 0);
+            $limit = $request->input('limit', 10);
+
             $hotels = Hotel::filter($filters, $offset, $limit);
             return response()->json($hotels, 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Internal server error', 'message' => $e->getMessage()], 500);
+            \Log::error('Error fetching hotels', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }
     }
 }

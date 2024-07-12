@@ -255,28 +255,34 @@ class Hotel extends Model
 
     public static function filter($filters, $offset, $limit)
     {
-        $instance = new static;
-        $conjuncts = new ConjunctionSearchQuery([]);
+        try {
+            $instance = new static;
+            $conjuncts = new ConjunctionSearchQuery([]);
 
-        foreach ($filters as $field => $value) {
-            if ($value) {
-                // Use TermSearchQuery for exact match
-                $query = new TermSearchQuery($value);
+            foreach ($filters as $field => $value) {
+                if ($value) {
+                    // Use TermSearchQuery for exact match
+                    $query = new TermSearchQuery($value);
 
-                // Use MatchSearchQuery for partial match
-                // $query = new MatchSearchQuery($value);
-                
-                $query->field($field);
-                $conjuncts->and($query);
+                    // Use MatchSearchQuery for partial match
+                    // $query = new MatchSearchQuery($value);
+                    
+                    $query->field($field);
+                    $conjuncts->and($query);
+                }
             }
+
+            $options = new SearchOptions();
+            $options->skip($offset)->limit($limit)->fields(['name', 'title', 'description', 'country', 'city', 'state']);
+            $result = $instance->cluster->searchQuery(self::HOTEL_SEARCH_INDEX_NAME, $conjuncts, $options);
+
+            return array_map(function ($row) {
+                return $row['fields'];
+            }, $result->rows());
+
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            throw $e;
         }
-
-        $options = new SearchOptions();
-        $options->skip($offset)->limit($limit)->fields(['name', 'title', 'description', 'country', 'city', 'state']);
-        $result = $instance->cluster->searchQuery(self::HOTEL_SEARCH_INDEX_NAME, $conjuncts, $options);
-
-        return array_map(function ($row) {
-            return $row['fields'];
-        }, $result->rows());
     }
 }
