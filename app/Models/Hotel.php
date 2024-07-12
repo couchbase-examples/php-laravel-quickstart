@@ -7,6 +7,7 @@ use Couchbase\Cluster;
 use Couchbase\MatchSearchQuery;
 use Couchbase\ConjunctionSearchQuery;
 use Couchbase\SearchOptions;
+use Couchbase\TermSearchQuery;
 
 /**
  * @OA\Schema(
@@ -259,7 +260,12 @@ class Hotel extends Model
 
         foreach ($filters as $field => $value) {
             if ($value) {
-                $query = new MatchSearchQuery($value);
+                // Use TermSearchQuery for exact match
+                $query = new TermSearchQuery($value);
+
+                // Use MatchSearchQuery for partial match
+                // $query = new MatchSearchQuery($value);
+                
                 $query->field($field);
                 $conjuncts->and($query);
             }
