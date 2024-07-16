@@ -2,13 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Airline;
 
 class AirlineTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $airlineCollection;
 

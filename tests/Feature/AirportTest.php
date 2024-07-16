@@ -2,14 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Airport;
 
 class AirportTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $airportCollection;
 
     public function setUp(): void

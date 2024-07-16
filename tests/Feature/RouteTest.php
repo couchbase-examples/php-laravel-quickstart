@@ -2,13 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Route;
 
 class RouteTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $routeCollection;
 
