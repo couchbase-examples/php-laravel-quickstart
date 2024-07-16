@@ -35,6 +35,12 @@ jobs:
       - name: Install Couchbase PHP extension
         run: sudo pecl install couchbase
 
+      - name: Install Couchbase PHP extension
+        run: sudo pecl install couchbase
+        
+      - name: Enable Couchbase PHP extension
+        run: echo "extension=couchbase.so" | sudo tee -a /usr/local/etc/php/php.ini
+
       - name: Run Migration
         run: php artisan migrate --force
 
