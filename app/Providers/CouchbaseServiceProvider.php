@@ -7,6 +7,7 @@ use Couchbase\ClusterOptions;
 use Couchbase\Cluster;
 use Couchbase\Management\SearchIndex;
 use Couchbase\Exception\CouchbaseException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Storage;
 
 class CouchbaseServiceProvider extends ServiceProvider
@@ -67,7 +68,7 @@ class CouchbaseServiceProvider extends ServiceProvider
         try {
             // Read the index configuration from the JSON file using Laravel's storage system
             if (!Storage::exists($indexFilePath)) {
-                throw new \Exception("Index file not found at storage/app/{$indexFilePath}");
+                throw new FileNotFoundException("Index file not found at storage/app/{$indexFilePath}");
             }
             $indexContent = Storage::get($indexFilePath);
             $indexData = json_decode($indexContent, true);
@@ -107,9 +108,13 @@ class CouchbaseServiceProvider extends ServiceProvider
             // Upsert (create or update) the index
             $searchIndexManager->upsertIndex($index);
 
-            echo "Hotel Search index created or updated successfully.\n";
+            \Log::info("Hotel Search index created or updated successfully.");
         } catch (CouchbaseException $e) {
-            \Log::error("Couchbase Exception Occurred: " . $e->getMessage());
+            if ($e->getCode() === 18) {
+                \Log::warning("Search index already exists.");
+            } else {
+                \Log::error("Couchbase Exception Occurred: " . $e->getMessage());
+            }
         } catch (\Exception $e) {
             \Log::error("Exception Ocurred: " . $e->getMessage());
         }
