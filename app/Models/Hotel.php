@@ -223,7 +223,7 @@ class Hotel extends Model
     protected $bucket;
     protected $collection;
 
-    const HOTEL_SEARCH_INDEX_NAME = 'travel-sample.inventory.hotel_search';
+    const HOTEL_SEARCH_INDEX_NAME = 'hotel_search';
 
     public function __construct(array $attributes = [])
     {
