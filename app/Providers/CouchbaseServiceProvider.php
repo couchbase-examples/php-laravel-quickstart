@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Couchbase\ClusterOptions;
 use Couchbase\Cluster;
+use Couchbase\Management\SearchIndex;
+use Couchbase\Exception\CouchbaseException;
+use Illuminate\Support\Facades\Storage;
 
 class CouchbaseServiceProvider extends ServiceProvider
 {
@@ -30,7 +33,6 @@ class CouchbaseServiceProvider extends ServiceProvider
             $config = $app['config']['couchbase'];
             return $cluster->bucket($config['bucket']);
         });
-
 
         $this->app->singleton('couchbase.airlineCollection', function ($app) {
             $bucket = $app->make('couchbase.bucket');
@@ -60,6 +62,56 @@ class CouchbaseServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $indexFilePath = 'hotel_search_index.json';
+
+        try {
+            // Read the index configuration from the JSON file using Laravel's storage system
+            if (!Storage::exists($indexFilePath)) {
+                throw new \Exception("Index file not found at storage/app/{$indexFilePath}");
+            }
+            $indexContent = Storage::get($indexFilePath);
+            $indexData = json_decode($indexContent, true);
+
+            // Get the cluster instance
+            $cluster = $this->app->make('couchbase.cluster');
+
+            // Create an instance of the SearchIndexManager
+            $searchIndexManager = $cluster->searchIndexes();
+
+            // Create a new SearchIndex instance
+            $index = new SearchIndex($indexData['name'], $indexData['sourceName']);
+            if (isset($indexData['uuid'])) {
+                $index->setUuid($indexData['uuid']);
+            }
+            if (isset($indexData['type'])) {
+                $index->setType($indexData['type']);
+            }
+            if (isset($indexData['params'])) {
+                $index->setParams($indexData['params']);
+            }
+            if (isset($indexData['sourceUUID'])) {
+                $index->setSourceUuid($indexData['sourceUUID']);
+            }
+            if (isset($indexData['sourceType'])) {
+                $index->setSourceType($indexData['sourceType']);
+            }
+            if (isset($indexData['sourceParams'])) {
+                $index->setSourceParams($indexData['sourceParams']);
+            }
+            if (isset($indexData['planParams'])) {
+                $index->setPlanParams($indexData['planParams']);
+            }
+
+            \Log::info("Upserting index: " . json_encode($indexData));
+
+            // Upsert (create or update) the index
+            $searchIndexManager->upsertIndex($index);
+
+            echo "Hotel Search index created or updated successfully.\n";
+        } catch (CouchbaseException $e) {
+            \Log::error("Couchbase Exception Occurred: " . $e->getMessage());
+        } catch (\Exception $e) {
+            \Log::error("Exception Ocurred: " . $e->getMessage());
+        }
     }
 }

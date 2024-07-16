@@ -75,7 +75,7 @@ class HotelController extends Controller
      *     summary="Filter hotels by various attributes",
      *     description="Returns a list of hotels that match the provided filters",
      *     @OA\Parameter(
-     *         name="hotel[name]",
+     *         name="name",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
@@ -83,7 +83,7 @@ class HotelController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="hotel[title]",
+     *         name="title",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
@@ -91,7 +91,7 @@ class HotelController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="hotel[description]",
+     *         name="description",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
@@ -99,7 +99,7 @@ class HotelController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="hotel[country]",
+     *         name="country",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
@@ -107,7 +107,7 @@ class HotelController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="hotel[city]",
+     *         name="city",
      *         in="query",
      *         required=false,
      *         @OA\Schema(
@@ -115,7 +115,7 @@ class HotelController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="hotel[state]",
+     *         name="state",
      *         in="query",
      *         required=false,
      *         @OA\Schema(

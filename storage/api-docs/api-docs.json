@@ -617,7 +617,7 @@
                 "operationId": "filterHotels",
                 "parameters": [
                     {
-                        "name": "hotel[name]",
+                        "name": "name",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -625,7 +625,7 @@
                         }
                     },
                     {
-                        "name": "hotel[title]",
+                        "name": "title",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -633,7 +633,7 @@
                         }
                     },
                     {
-                        "name": "hotel[description]",
+                        "name": "description",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -641,7 +641,7 @@
                         }
                     },
                     {
-                        "name": "hotel[country]",
+                        "name": "country",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -649,7 +649,7 @@
                         }
                     },
                     {
-                        "name": "hotel[city]",
+                        "name": "city",
                         "in": "query",
                         "required": false,
                         "schema": {
@@ -657,7 +657,7 @@
                         }
                     },
                     {
-                        "name": "hotel[state]",
+                        "name": "state",
                         "in": "query",
                         "required": false,
                         "schema": {
