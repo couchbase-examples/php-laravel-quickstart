@@ -16,28 +16,25 @@ jobs:
       DB_CONN_STR: ${{ vars.DB_CONN_STR }}
       DB_USERNAME: ${{ vars.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           extensions: mbstring, json, pdo, curl
           ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=2G
           coverage: none
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
- 
-      - name: Install Couchbase PHP extension
-        run: sudo pecl install couchbase
 
       - name: Install Couchbase PHP extension
         run: sudo pecl install couchbase
-        
+
       - name: Enable Couchbase PHP extension
         run: echo "extension=couchbase.so" | sudo tee -a /usr/local/etc/php/php.ini
 
