@@ -47,7 +47,8 @@ jobs:
         run: php artisan key:generate
 
       - name: Run tests
-        run: vendor/bin/phpunit --coverage-text --colors=never
+        # run: vendor/bin/phpunit --coverage-text --colors=never
+        run: php artisan test
 
       - name: Report Status
         if: always()
