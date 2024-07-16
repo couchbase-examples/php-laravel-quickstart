@@ -30,19 +30,15 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
 
-      - name: Install Couchbase PHP extension
-        run: sudo pecl install couchbase
-
-      - name: Enable Couchbase PHP extension
-        run: echo "extension=couchbase.so" | sudo tee -a /usr/local/etc/php/php.ini
-
-      - name: Run Migration
-        run: php artisan migrate --force
+      - name: Install and enable Couchbase PHP extension
+        run: |
+          sudo pecl install couchbase
+          echo "extension=couchbase.so" | sudo tee -a $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
 
       - name: Run tests
-        run: php artisan test
+        run: vendor/bin/phpunit --coverage-text --colors=never
 
       - name: Report Status
         if: always()
