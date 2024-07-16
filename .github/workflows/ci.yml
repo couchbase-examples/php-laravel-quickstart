@@ -29,13 +29,16 @@ jobs:
           ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=2G
           coverage: none
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --optimize-autoloader
-
-      - name: Install and enable Couchbase PHP extension
+      - name: Install Couchbase PHP extension
         run: |
           sudo pecl install couchbase
           echo "extension=couchbase.so" | sudo tee -a $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
+
+      - name: Verify Couchbase PHP extension installation
+        run: php -m | grep -i couchbase
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
 
       - name: Run tests
         run: vendor/bin/phpunit --coverage-text --colors=never
