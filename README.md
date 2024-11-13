@@ -50,9 +50,7 @@ Specifically, you need to do the following:
 
 All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `config/couchbase.php`.
 
-Set the values for the Couchbase connection in the `config/couchbase.php` file. This file is used to store sensitive information and should not be checked into version control.
-
-> Note: Files starting with `.` could be hidden in the file manager in your Unix based systems including GNU/Linux and Mac OS.
+> Note: Set the values for the Couchbase connection in the `config/couchbase.php` file. This file is used to store sensitive information and should not be checked into version control.
 
 ```php
 <?php
