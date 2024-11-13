@@ -48,16 +48,20 @@ Specifically, you need to do the following:
 - Create the [database credentials](https://docs.couchbase.com/cloud/clusters/manage-database-users.html) to access the travel-sample bucket (Read and Write) used in the application.
 - [Allow access](https://docs.couchbase.com/cloud/clusters/allow-ip-address.html) to the Cluster from the IP on which the application is running.
 
-All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `config/couchbase.php` in the source folder.
+All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `config/couchbase.php`.
 
-Create a copy of `config/couchbase.php.example` in the `app` folder & rename it to `config/couchbase.php`& add the values for the Couchbase connection.
+Set the values for the Couchbase connection in the `config/couchbase.php` file. This file is used to store sensitive information and should not be checked into version control.
 
 > Note: Files starting with `.` could be hidden in the file manager in your Unix based systems including GNU/Linux and Mac OS.
 
-```sh
-DB_CONN_STR=<connection_string>
-DB_USERNAME=<user_with_read_write_permission_to_travel-sample_bucket>
-DB_PASSWORD=<password_for_user>
+```php
+<?php
+return [
+    'host' => env('DB_CONN_STR', 'couchbase://127.0.0.1'),
+    'username' => env('DB_USERNAME', 'Administrator'),
+    'password' => env('DB_PASSWORD', 'password'),
+    'bucket' => env('DB_BUCKET', 'travel-sample'),
+];
 ```
 
 > Note: The connection string expects the `couchbases://` or `couchbase://` part.
