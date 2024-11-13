@@ -276,11 +276,15 @@ If you are running this quickstart with a self-managed Couchbase cluster, you ne
 
 You need to update the connection string and the credentials in the `config/couchbase.php` file:
 
-```env
-DB_CONN_STR_=couchbase://<your-couchbase-server>
-DB_USERNAME=<your-username>
-DB_PASSWORD=<your-password>
-DB_BUCKET=travel-sample
+```php
+
+<?php
+return [
+    'host' => env('DB_CONN_STR', 'couchbase://<your-couchbase-server>'),
+    'username' => env('DB_USERNAME', '<your-username>'),
+    'password' => env('DB_PASSWORD', '<your-password>'),
+    'bucket' => env('DB_BUCKET', 'travel-sample'),
+];
 ```
 
 Replace `<your-couchbase-server>`, `<your-username>`, and `<your-password>` with your actual Couchbase server details and credentials.
