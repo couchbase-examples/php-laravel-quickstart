@@ -94,7 +94,7 @@ Once the application starts, you can see the details of the application on the l
 
 ![Application Startup](./public/php-quickstart-app-startup.png)
 
-The application will run on port 8000 of your local machine (http://localhost:8000). You will find the Swagger documentation of the API if you go to the URL in your browser. Swagger documentation is used in this demo to showcase the different API endpoints and how they can be invoked. More details on the Swagger documentation can be found in the [appendix](#swagger-documentation).
+The application will run on port 8000 of your local machine (http://localhost:8000/api/documentation). You will find the Swagger documentation of the API if you go to the URL in your browser. Swagger documentation is used in this demo to showcase the different API endpoints and how they can be invoked. More details on the Swagger documentation can be found in the [appendix](#swagger-documentation).
 
 ![Swagger Documentation](./public/php-quickstart-swagger.png)
 
