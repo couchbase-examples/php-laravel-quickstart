@@ -84,8 +84,8 @@ class HotelTest extends TestCase
         // Assert
         $response->assertStatus(200);
 
-        $response->assertJsonFragment(['name' => 'Hotel Rex']);
-        $response->assertJsonFragment(['name'=> 'Cova Hotel']);
+        $response->assertJsonFragment(['name' => 'Chancellor Hotel']);
+        $response->assertJsonFragment(['name' => 'Hotel Nikko']);
     }
 
     /** @test */

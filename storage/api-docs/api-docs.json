@@ -1285,5 +1285,23 @@
                 "type": "object"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Airlines",
+            "description": "Airlines"
+        },
+        {
+            "name": "Airports",
+            "description": "Airports"
+        },
+        {
+            "name": "Hotels",
+            "description": "Hotels"
+        },
+        {
+            "name": "Routes",
+            "description": "Routes"
+        }
+    ]
 }
