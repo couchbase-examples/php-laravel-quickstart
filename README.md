@@ -55,18 +55,6 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-3. Create the database and run the migrations:
-
-```sh
-mkdir -p database && touch database/database.sqlite && php artisan migrate
-```
-
-4. Generate Swagger documentation:
-
-```sh
-php artisan l5-swagger:generate
-```
-
 ### Setup Database Configuration
 
 To learn more about connecting to your Capella cluster, please follow the [instructions](https://docs.couchbase.com/cloud/get-started/connect.html).
