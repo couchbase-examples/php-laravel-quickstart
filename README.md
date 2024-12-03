@@ -17,6 +17,8 @@ To run this prebuilt project, you will need:
   - To run this tutorial using a self-managed Couchbase cluster, please refer to the [appendix](#running-self-managed-couchbase-cluster).
 - [PHP](https://www.php.net/downloads.php) 8.2 or higher installed
   - Ensure that the PHP version is [compatible](https://docs.couchbase.com/php-sdk/current/project-docs/compatibility.html#php-version-compat) with the Couchbase SDK.
+- [Composer](https://getcomposer.org/) (PHP package manager)
+  - Keep Composer up to date by running `sudo composer self-update` periodically. The latest stable version is 2.8.3.
 - Loading Travel Sample Bucket
   If travel-sample is not loaded in your Capella cluster, you can load it by following the instructions for your Capella Cluster:
   - [Load travel-sample bucket in Couchbase Capella](https://docs.couchbase.com/cloud/clusters/data-service/import-data-documents.html#import-sample-data)
