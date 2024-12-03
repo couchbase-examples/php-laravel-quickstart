@@ -13,6 +13,30 @@ use Illuminate\Support\Facades\Storage;
 
 class CouchbaseServiceProvider extends ServiceProvider
 {
+    /**
+     * Commands that don't require database access
+     */
+    private $nonDatabaseCommands = [
+        'key:generate',
+        'config:cache',
+        'config:clear',
+        'view:cache',
+        'view:clear',
+        'route:cache',
+        'route:clear',
+        'package:discover'
+    ];
+
+    private function shouldSkipDatabaseOperations(): bool
+    {
+        if (!$this->app->runningInConsole()) {
+            return false;
+        }
+
+        $command = $_SERVER['argv'][1] ?? null;
+        return $command && in_array($command, $this->nonDatabaseCommands);
+    }
+
     private function createClusterConnection($config, $retries = 3)
     {
         $lastException = null;
@@ -63,72 +87,31 @@ class CouchbaseServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if ($this->shouldSkipDatabaseOperations()) {
+            return;
+        }
+
+        // Bind cluster as a singleton but don't create it yet
         $this->app->singleton('couchbase.cluster', function ($app) {
             $config = $app['config']['couchbase'];
             return $this->createClusterConnection($config);
         });
 
+        // Bind bucket as a singleton but don't create it yet
         $this->app->singleton('couchbase.bucket', function ($app) {
-            try {
-                $cluster = $app->make('couchbase.cluster');
-                $config = $app['config']['couchbase'];
-                return $cluster->bucket($config['bucket']);
-            } catch (\Exception $e) {
-                \Log::error('Failed to connect to Couchbase bucket', [
-                    'error' => $e->getMessage(),
-                    'bucket' => $config['bucket']
-                ]);
-                throw $e;
-            }
+            $cluster = $app->make('couchbase.cluster');
+            $config = $app['config']['couchbase'];
+            return $cluster->bucket($config['bucket']);
         });
 
-        $this->app->singleton('couchbase.airlineCollection', function ($app) {
-            try {
+        // Bind collections as singletons but don't create them yet
+        $collections = ['airline', 'airport', 'route', 'hotel'];
+        foreach ($collections as $collection) {
+            $this->app->bind("couchbase.{$collection}Collection", function ($app) use ($collection) {
                 $bucket = $app->make('couchbase.bucket');
-                return $bucket->scope('inventory')->collection('airline');
-            } catch (\Exception $e) {
-                \Log::error('Failed to get airline collection', [
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        });
-
-        $this->app->singleton('couchbase.airportCollection', function ($app) {
-            try {
-                $bucket = $app->make('couchbase.bucket');
-                return $bucket->scope('inventory')->collection('airport');
-            } catch (\Exception $e) {
-                \Log::error('Failed to get airport collection', [
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        });
-
-        $this->app->singleton('couchbase.routeCollection', function ($app) {
-            try {
-                $bucket = $app->make('couchbase.bucket');
-                return $bucket->scope('inventory')->collection('route');
-            } catch (\Exception $e) {
-                \Log::error('Failed to get route collection', [
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        });
-
-        $this->app->singleton('couchbase.hotelCollection', function ($app) {
-            try {
-                $bucket = $app->make('couchbase.bucket');
-                return $bucket->scope('inventory')->collection('hotel');
-            } catch (\Exception $e) {
-                \Log::error('Failed to get hotel collection', [
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        });
+                return $bucket->scope('inventory')->collection($collection);
+            });
+        }
     }
 
     /**
@@ -137,6 +120,20 @@ class CouchbaseServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
+    {
+        if ($this->shouldSkipDatabaseOperations()) {
+            return;
+        }
+
+        if (!$this->app->environment('testing')) {
+            $this->createSearchIndex();
+        }
+    }
+
+    /**
+     * Create the search index if needed
+     */
+    private function createSearchIndex()
     {
         try {
             $indexFilePath = 'hotel_search_index.json';
