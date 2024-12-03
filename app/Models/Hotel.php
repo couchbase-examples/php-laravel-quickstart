@@ -8,6 +8,7 @@ use Couchbase\MatchSearchQuery;
 use Couchbase\ConjunctionSearchQuery;
 use Couchbase\SearchOptions;
 use Couchbase\TermSearchQuery;
+use Couchbase\Exception\CouchbaseException;
 
 /**
  * @OA\Schema(
@@ -247,8 +248,51 @@ class Hotel extends Model
                 return $row['fields'];
             }, $result->rows());
 
+        } catch (CouchbaseException $e) {
+            if ($e->getCode() === 4) {
+                // Search service not available, fallback to basic key-value query
+                \Log::warning("Search service not available, falling back to basic query", [
+                    'error' => $e->getMessage()
+                ]);
+                return self::fallbackSearchByName($name);
+            }
+            throw $e;
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
+            throw $e;
+        }
+    }
+
+    protected static function fallbackSearchByName($name)
+    {
+        try {
+            $instance = new static;
+            $options = new \Couchbase\QueryOptions();
+            
+            // Use N1QL query as fallback
+            $query = "SELECT name, title, description, country, city, state 
+                     FROM `" . config('couchbase.bucket') . "`.inventory.hotel 
+                     WHERE LOWER(name) LIKE $1 
+                     OR LOWER(title) LIKE $1";
+            
+            $searchPattern = '%' . strtolower($name) . '%';
+            $result = $instance->cluster->query($query, $options->positionalParameters([$searchPattern]));
+            
+            return array_map(function ($row) {
+                return [
+                    'name' => $row['name'],
+                    'title' => $row['title'],
+                    'description' => $row['description'],
+                    'country' => $row['country'],
+                    'city' => $row['city'],
+                    'state' => $row['state']
+                ];
+            }, $result->rows());
+
+        } catch (\Exception $e) {
+            \Log::error("Fallback search failed", [
+                'error' => $e->getMessage()
+            ]);
             throw $e;
         }
     }
@@ -280,8 +324,67 @@ class Hotel extends Model
                 return $row['fields'];
             }, $result->rows());
 
+        } catch (CouchbaseException $e) {
+            if ($e->getCode() === 4) {
+                // Search service not available, fallback to basic key-value query
+                \Log::warning("Search service not available, falling back to basic query", [
+                    'error' => $e->getMessage()
+                ]);
+                return self::fallbackFilter($filters, $offset, $limit);
+            }
+            throw $e;
         } catch (\Exception $e) {
             \Log::error($e->getMessage());
+            throw $e;
+        }
+    }
+
+    protected static function fallbackFilter($filters, $offset, $limit)
+    {
+        try {
+            $instance = new static;
+            $options = new \Couchbase\QueryOptions();
+            
+            // Build WHERE clause dynamically
+            $whereConditions = [];
+            $params = [];
+            $paramIndex = 1;
+            
+            foreach ($filters as $field => $value) {
+                if ($value) {
+                    $whereConditions[] = "LOWER($field) = $$paramIndex";
+                    $params[] = strtolower($value);
+                    $paramIndex++;
+                }
+            }
+            
+            $whereClause = count($whereConditions) > 0 
+                ? 'WHERE ' . implode(' AND ', $whereConditions)
+                : '';
+            
+            $query = "SELECT name, title, description, country, city, state 
+                     FROM `" . config('couchbase.bucket') . "`.inventory.hotel 
+                     $whereClause 
+                     LIMIT $limit 
+                     OFFSET $offset";
+            
+            $result = $instance->cluster->query($query, $options->positionalParameters($params));
+            
+            return array_map(function ($row) {
+                return [
+                    'name' => $row['name'],
+                    'title' => $row['title'],
+                    'description' => $row['description'],
+                    'country' => $row['country'],
+                    'city' => $row['city'],
+                    'state' => $row['state']
+                ];
+            }, $result->rows());
+
+        } catch (\Exception $e) {
+            \Log::error("Fallback filter failed", [
+                'error' => $e->getMessage()
+            ]);
             throw $e;
         }
     }

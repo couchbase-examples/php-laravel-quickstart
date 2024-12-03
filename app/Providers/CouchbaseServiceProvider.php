@@ -182,9 +182,19 @@ class CouchbaseServiceProvider extends ServiceProvider
 
             \Log::info("Upserting index: " . json_encode($indexData));
 
-            $searchIndexManager->upsertIndex($index);
-
-            \Log::info("Hotel Search index created or updated successfully.");
+            try {
+                $searchIndexManager->upsertIndex($index);
+                \Log::info("Hotel Search index created or updated successfully.");
+            } catch (CouchbaseException $e) {
+                if ($e->getCode() === 4) {
+                    // Service not available - likely means search service is not enabled
+                    \Log::warning("Search service is not available on this cluster. Hotel search functionality will be limited.", [
+                        'error' => $e->getMessage()
+                    ]);
+                } else {
+                    throw $e;
+                }
+            }
         } catch (CouchbaseException $e) {
             if ($e->getCode() === 18) {
                 \Log::warning("Search index already exists.");
