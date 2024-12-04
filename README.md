@@ -31,6 +31,7 @@ We will walk through the different steps required to get the application running
 
 ```shell
 git clone https://github.com/couchbase-examples/php-laravel-quickstart.git
+cd php-laravel-quickstart
 ```
 
 ### Install Dependencies
