@@ -21,8 +21,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Get list of airlines",
-                "description": "Returns list of airlines",
+                "summary": "List Airlines",
+                "description": "Get List of Airlines\n\nThis provides an example\nof using Query operations\nin Couchbase to retrieve a list of airlines.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: index",
                 "operationId": "getAirlinesList",
                 "parameters": [
                     {
@@ -81,8 +81,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Get airline information",
-                "description": "Returns airline data",
+                "summary": "Get Document",
+                "description": "Get Airline with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to retrieve a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: show",
                 "operationId": "getAirlineById",
                 "parameters": [
                     {
@@ -117,8 +117,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Update an existing airline or create a new one if it does not exist",
-                "description": "Update an existing airline or create a new one if it does not exist",
+                "summary": "Update Document",
+                "description": "Update Airline with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to update a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: update",
                 "operationId": "updateAirline",
                 "parameters": [
                     {
@@ -131,7 +131,7 @@
                     }
                 ],
                 "requestBody": {
-                    "description": "Airline object that needs to be updated or created",
+                    "description": "Airline object that needs to be updated",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -145,8 +145,8 @@
                     "200": {
                         "description": "Successful operation"
                     },
-                    "201": {
-                        "description": "Resource created successfully"
+                    "404": {
+                        "description": "Not Found"
                     },
                     "422": {
                         "description": "Validation Error"
@@ -160,8 +160,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Create a new airline",
-                "description": "Create a new airline",
+                "summary": "Create Document",
+                "description": "Create Airline with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to create a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: store",
                 "operationId": "createAirline",
                 "parameters": [
                     {
@@ -195,13 +195,15 @@
                         "description": "Internal Server Error"
                     }
                 }
-            },
+            }
+        },
+        "/api/v1/airline/{id}": {
             "delete": {
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Delete an airline",
-                "description": "Delete an airline",
+                "summary": "Delete Document",
+                "description": "Delete Airline with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to delete a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: deleteAirline",
                 "operationId": "deleteAirline",
                 "parameters": [
                     {
@@ -231,8 +233,8 @@
                 "tags": [
                     "Airlines"
                 ],
-                "summary": "Get airlines flying to a destination airport",
-                "description": "Returns list of airlines flying to a specific airport",
+                "summary": "List Airlines to Airport",
+                "description": "Get Airlines flying to specified Airport\n\nThis provides an example\nof using Query operations\nin Couchbase to find airlines flying to a specific airport.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)\n\nMethod: toAirport",
                 "operationId": "getAirlinesToAirport",
                 "parameters": [
                     {
@@ -291,8 +293,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Get list of airports",
-                "description": "Returns list of airports",
+                "summary": "List Airports",
+                "description": "Get List of Airports\n\nThis provides an example\nof using Query operations\nin Couchbase to retrieve a list of airports.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: index",
                 "operationId": "getAirportsList",
                 "parameters": [
                     {
@@ -342,8 +344,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Get airport information",
-                "description": "Returns airport data",
+                "summary": "Get Document",
+                "description": "Get Airport with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to retrieve a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: show",
                 "operationId": "getAirportById",
                 "parameters": [
                     {
@@ -378,8 +380,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Update an existing airport or create a new one if it does not exist",
-                "description": "Update an existing airport or create a new one if it does not exist",
+                "summary": "Update Document",
+                "description": "Update Airport with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to update a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: update",
                 "operationId": "updateAirport",
                 "parameters": [
                     {
@@ -421,8 +423,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Create a new airport",
-                "description": "Create a new airport",
+                "summary": "Create Document",
+                "description": "Create Airport with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to create a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: store",
                 "operationId": "createAirport",
                 "parameters": [
                     {
@@ -461,8 +463,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Delete an airport",
-                "description": "Delete an airport",
+                "summary": "Delete Document",
+                "description": "Delete Airport with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to delete a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: deleteAirport",
                 "operationId": "deleteAirport",
                 "parameters": [
                     {
@@ -492,8 +494,8 @@
                 "tags": [
                     "Airports"
                 ],
-                "summary": "Get airports with direct flights from a target airport",
-                "description": "Returns list of airports that have direct flights from a target airport",
+                "summary": "List Direct Connections",
+                "description": "Get Airports with Direct Connections\n\nThis provides an example\nof using Query operations\nin Couchbase to find airports with direct flight connections.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)\n\nMethod: getDirectConnections",
                 "operationId": "getDirectConnections",
                 "parameters": [
                     {
@@ -552,8 +554,8 @@
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Search for hotels by name",
-                "description": "Returns a list of hotels that match the provided name",
+                "summary": "Search Hotels",
+                "description": "Search Hotels by Name\n\nThis provides an example\nof using Query operations\nin Couchbase to perform a search with autocomplete functionality.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/HotelController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/HotelController.php)\n\nMethod: search",
                 "operationId": "searchHotels",
                 "parameters": [
                     {
@@ -612,8 +614,8 @@
                 "tags": [
                     "Hotels"
                 ],
-                "summary": "Filter hotels by various attributes",
-                "description": "Returns a list of hotels that match the provided filters",
+                "summary": "Filter Hotels",
+                "description": "Filter Hotels by Multiple Attributes\n\nThis provides an example\nof using Query operations\nin Couchbase to filter documents using multiple criteria.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/HotelController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/HotelController.php)\n\nMethod: filter",
                 "operationId": "filterHotels",
                 "parameters": [
                     {
@@ -728,8 +730,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Get list of routes",
-                "description": "Returns list of routes",
+                "summary": "List Routes",
+                "description": "Get List of Routes\n\nThis provides an example\nof using Query operations\nin Couchbase to retrieve a list of routes.\n\nQuery operations\nare unique to Couchbase and allow you to search, transform, and analyze data in your documents\n\nCode:\n[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)\n\nMethod: index",
                 "operationId": "getRoutesList",
                 "parameters": [
                     {
@@ -779,8 +781,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Get route information",
-                "description": "Returns route data",
+                "summary": "Get Document",
+                "description": "Get Route with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to retrieve a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)\n\nMethod: show",
                 "operationId": "getRouteById",
                 "parameters": [
                     {
@@ -815,8 +817,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Update an existing route or create a new one if it does not exist",
-                "description": "Update an existing route or create a new one if it does not exist",
+                "summary": "Update Document",
+                "description": "Update Route with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to update a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)\n\nMethod: update",
                 "operationId": "updateRoute",
                 "parameters": [
                     {
@@ -858,8 +860,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Create a new route",
-                "description": "Create a new route",
+                "summary": "Create Document",
+                "description": "Create Route with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to create a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)\n\nMethod: store",
                 "operationId": "createRoute",
                 "parameters": [
                     {
@@ -898,8 +900,8 @@
                 "tags": [
                     "Routes"
                 ],
-                "summary": "Delete a route",
-                "description": "Delete a route",
+                "summary": "Delete Document",
+                "description": "Delete Route with specified ID\n\nThis provides an example\nof using Key Value operations\nin Couchbase to delete a document with specified ID.\n\nKey Value operations\nare unique to Couchbase and provide very high speed get/set/delete operations\n\nCode:\n[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)\n\nMethod: deleteRoute",
                 "operationId": "deleteRoute",
                 "parameters": [
                     {

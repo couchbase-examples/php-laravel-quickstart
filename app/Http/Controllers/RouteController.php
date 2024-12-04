@@ -52,8 +52,20 @@ class RouteController extends Controller
      *     path="/api/v1/routes/list",
      *     operationId="getRoutesList",
      *     tags={"Routes"},
-     *     summary="Get list of routes",
-     *     description="Returns list of routes",
+     *     summary="List Routes",
+     *     description="Get List of Routes
+
+This provides an example
+of using Query operations
+in Couchbase to retrieve a list of routes.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)
+
+Method: index",
      *     @OA\Parameter(
      *         name="offset",
      *         in="query",
@@ -111,8 +123,20 @@ class RouteController extends Controller
      *     path="/api/v1/routes/{id}",
      *     operationId="getRouteById",
      *     tags={"Routes"},
-     *     summary="Get route information",
-     *     description="Returns route data",
+     *     summary="Get Document",
+     *     description="Get Route with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to retrieve a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)
+
+Method: show",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -155,8 +179,20 @@ class RouteController extends Controller
      *     path="/api/v1/routes/{id}",
      *     operationId="createRoute",
      *     tags={"Routes"},
-     *     summary="Create a new route",
-     *     description="Create a new route",
+     *     summary="Create Document",
+     *     description="Create Route with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to create a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)
+
+Method: store",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -200,13 +236,26 @@ class RouteController extends Controller
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
+
     /**
      * @OA\Put(
      *     path="/api/v1/routes/{id}",
      *     operationId="updateRoute",
      *     tags={"Routes"},
-     *     summary="Update an existing route or create a new one if it does not exist",
-     *     description="Update an existing route or create a new one if it does not exist",
+     *     summary="Update Document",
+     *     description="Update Route with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to update a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)
+
+Method: update",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -245,7 +294,6 @@ class RouteController extends Controller
         }
 
         try {
-
             $data = $request->only($this->allowedAttributes);
             $route = Route::findRoute($id);
 
@@ -269,8 +317,20 @@ class RouteController extends Controller
      *     path="/api/v1/routes/{id}",
      *     operationId="deleteRoute",
      *     tags={"Routes"},
-     *     summary="Delete a route",
-     *     description="Delete a route",
+     *     summary="Delete Document",
+     *     description="Delete Route with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to delete a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/RouteController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/RouteController.php)
+
+Method: deleteRoute",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

@@ -49,8 +49,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/list",
      *     operationId="getAirportsList",
      *     tags={"Airports"},
-     *     summary="Get list of airports",
-     *     description="Returns list of airports",
+     *     summary="List Airports",
+     *     description="Get List of Airports
+
+This provides an example
+of using Query operations
+in Couchbase to retrieve a list of airports.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: index",
      *     @OA\Parameter(
      *         name="offset",
      *         in="query",
@@ -108,8 +120,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/{id}",
      *     operationId="getAirportById",
      *     tags={"Airports"},
-     *     summary="Get airport information",
-     *     description="Returns airport data",
+     *     summary="Get Document",
+     *     description="Get Airport with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to retrieve a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: show",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -152,8 +176,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/{id}",
      *     operationId="createAirport",
      *     tags={"Airports"},
-     *     summary="Create a new airport",
-     *     description="Create a new airport",
+     *     summary="Create Document",
+     *     description="Create Airport with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to create a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: store",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -203,8 +239,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/{id}",
      *     operationId="updateAirport",
      *     tags={"Airports"},
-     *     summary="Update an existing airport or create a new one if it does not exist",
-     *     description="Update an existing airport or create a new one if it does not exist",
+     *     summary="Update Document",
+     *     description="Update Airport with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to update a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: update",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -268,8 +316,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/{id}",
      *     operationId="deleteAirport",
      *     tags={"Airports"},
-     *     summary="Delete an airport",
-     *     description="Delete an airport",
+     *     summary="Delete Document",
+     *     description="Delete Airport with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to delete a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: deleteAirport",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -314,8 +374,20 @@ class AirportController extends Controller
      *     path="/api/v1/airports/direct-connections",
      *     operationId="getDirectConnections",
      *     tags={"Airports"},
-     *     summary="Get airports with direct flights from a target airport",
-     *     description="Returns list of airports that have direct flights from a target airport",
+     *     summary="List Direct Connections",
+     *     description="Get Airports with Direct Connections
+
+This provides an example
+of using Query operations
+in Couchbase to find airports with direct flight connections.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/AirportController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirportController.php)
+
+Method: getDirectConnections",
      *     @OA\Parameter(
      *         name="sourceAirportCode",
      *         in="query",

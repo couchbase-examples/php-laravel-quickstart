@@ -13,8 +13,20 @@ class HotelController extends Controller
      *     path="/api/v1/hotels/autocomplete",
      *     operationId="searchHotels",
      *     tags={"Hotels"},
-     *     summary="Search for hotels by name",
-     *     description="Returns a list of hotels that match the provided name",
+     *     summary="Search Hotels",
+     *     description="Search Hotels by Name
+
+This provides an example
+of using Query operations
+in Couchbase to perform a search with autocomplete functionality.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/HotelController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/HotelController.php)
+
+Method: search",
      *     @OA\Parameter(
      *         name="name",
      *         in="query",
@@ -72,8 +84,20 @@ class HotelController extends Controller
      *     path="/api/v1/hotels/filter",
      *     operationId="filterHotels",
      *     tags={"Hotels"},
-     *     summary="Filter hotels by various attributes",
-     *     description="Returns a list of hotels that match the provided filters",
+     *     summary="Filter Hotels",
+     *     description="Filter Hotels by Multiple Attributes
+
+This provides an example
+of using Query operations
+in Couchbase to filter documents using multiple criteria.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/HotelController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/HotelController.php)
+
+Method: filter",
      *     @OA\Parameter(
      *         name="name",
      *         in="query",

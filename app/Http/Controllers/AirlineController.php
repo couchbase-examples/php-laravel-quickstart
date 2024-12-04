@@ -42,8 +42,20 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/list",
      *     operationId="getAirlinesList",
      *     tags={"Airlines"},
-     *     summary="Get list of airlines",
-     *     description="Returns list of airlines",
+     *     summary="List Airlines",
+     *     description="Get List of Airlines
+
+This provides an example
+of using Query operations
+in Couchbase to retrieve a list of airlines.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: index",
      *     @OA\Parameter(
      *         name="offset",
      *         in="query",
@@ -111,8 +123,20 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/{id}",
      *     operationId="getAirlineById",
      *     tags={"Airlines"},
-     *     summary="Get airline information",
-     *     description="Returns airline data",
+     *     summary="Get Document",
+     *     description="Get Airline with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to retrieve a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: show",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -155,8 +179,20 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/{id}",
      *     operationId="createAirline",
      *     tags={"Airlines"},
-     *     summary="Create a new airline",
-     *     description="Create a new airline",
+     *     summary="Create Document",
+     *     description="Create Airline with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to create a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: store",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -206,8 +242,20 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/{id}",
      *     operationId="updateAirline",
      *     tags={"Airlines"},
-     *     summary="Update an existing airline or create a new one if it does not exist",
-     *     description="Update an existing airline or create a new one if it does not exist",
+     *     summary="Update Document",
+     *     description="Update Airline with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to update a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: update",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -217,7 +265,7 @@ class AirlineController extends Controller
      *         )
      *     ),
      *     @OA\RequestBody(
-     *         description="Airline object that needs to be updated or created",
+     *         description="Airline object that needs to be updated",
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/Airline")
      *     ),
@@ -226,8 +274,8 @@ class AirlineController extends Controller
      *         description="Successful operation"
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="Resource created successfully"
+     *         response=404,
+     *         description="Not Found"
      *     ),
      *     @OA\Response(
      *         response=422,
@@ -268,11 +316,23 @@ class AirlineController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/airlines/{id}",
+     *     path="/api/v1/airline/{id}",
      *     operationId="deleteAirline",
      *     tags={"Airlines"},
-     *     summary="Delete an airline",
-     *     description="Delete an airline",
+     *     summary="Delete Document",
+     *     description="Delete Airline with specified ID
+
+This provides an example
+of using Key Value operations
+in Couchbase to delete a document with specified ID.
+
+Key Value operations
+are unique to Couchbase and provide very high speed get/set/delete operations
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: deleteAirline",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -317,8 +377,20 @@ class AirlineController extends Controller
      *     path="/api/v1/airlines/to-airport/{destinationAirportCode}",
      *     operationId="getAirlinesToAirport",
      *     tags={"Airlines"},
-     *     summary="Get airlines flying to a destination airport",
-     *     description="Returns list of airlines flying to a specific airport",
+     *     summary="List Airlines to Airport",
+     *     description="Get Airlines flying to specified Airport
+
+This provides an example
+of using Query operations
+in Couchbase to find airlines flying to a specific airport.
+
+Query operations
+are unique to Couchbase and allow you to search, transform, and analyze data in your documents
+
+Code:
+[app/Http/Controllers/AirlineController.php](https://github.com/couchbase-examples/php-laravel-quickstart/blob/main/app/Http/Controllers/AirlineController.php)
+
+Method: toAirport",
      *     @OA\Parameter(
      *         name="destinationAirportCode",
      *         in="path",
