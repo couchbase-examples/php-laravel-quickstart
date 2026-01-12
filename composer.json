@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "couchbase/couchbase": "^4.2",
-        "darkaonline/l5-swagger": "^9.0",
+        "darkaonline/l5-swagger": "^10.0",
         "laravel/framework": "^12.1",
         "laravel/tinker": "^2.9"
     },
