@@ -72,9 +72,7 @@ Specifically, you need to do the following:
 - Create the [database credentials](https://docs.couchbase.com/cloud/clusters/manage-database-users.html) to access the travel-sample bucket (Read and Write) used in the application.
 - [Allow access](https://docs.couchbase.com/cloud/clusters/allow-ip-address.html) to the Cluster from the IP on which the application is running.
 
-All configuration for communication with the database is read from the environment variables. We have provided a convenience feature in this quickstart to read the environment variables from a local file, `config/couchbase.php`.
-
-> Note: Set the values for the Couchbase connection in the `config/couchbase.php` file. This file is used to store sensitive information and should not be checked into version control.
+All configuration for communication with the database is read from environment variables. The checked-in `config/couchbase.php` file already maps those environment variables into the Laravel app, so you only need to set the values in your local `.env` file (or pass them in as container environment variables).
 
 ```php
 <?php
@@ -84,6 +82,15 @@ return [
     'password' => env('DB_PASSWORD', 'password'),
     'bucket' => env('DB_BUCKET', 'travel-sample'),
 ];
+```
+
+Add the corresponding values to `.env`:
+
+```dotenv
+DB_CONN_STR=couchbases://cb.<your-cluster>.<your-id>.cloud.couchbase.com
+DB_USERNAME=<your-username>
+DB_PASSWORD=<your-password>
+DB_BUCKET=travel-sample
 ```
 
 > Note: The connection string expects the `couchbases://` or `couchbase://` part.
@@ -109,10 +116,10 @@ docker build -t couchbase-laravel-quickstart .
 - Run the Docker image
 
 ```sh
-docker run -p 8000:8000 couchbase-laravel-quickstart
+docker run --rm -p 8000:8000 --env-file .env couchbase-laravel-quickstart
 ```
 
-> Note: The `config/couchbase.php` file has the connection information to connect to your Capella cluster. These will be part of the environment variables in the Docker container.
+> Note: If the Couchbase cluster is running on the same machine as Docker, use a host-reachable connection string in `.env` (for example `couchbase://host.docker.internal`, or `--network host` on Linux) so the container can reach the cluster.
 
 ### Verifying the Application
 
@@ -218,7 +225,7 @@ class HotelIntegrationTest extends TestCase
 
 If you are running this quickstart with a self-managed Couchbase cluster, you need to [load](https://docs.couchbase.com/server/current/manage/manage-settings/install-sample-buckets.html) the travel-sample data bucket in your cluster and generate the credentials for the bucket.
 
-You need to update the connection string and the credentials in the `config/couchbase.php` file:
+You need to update the connection string and credentials in your local `.env` file:
 
 ```php
 <?php

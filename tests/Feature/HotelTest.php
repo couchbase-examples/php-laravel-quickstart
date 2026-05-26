@@ -83,8 +83,12 @@ class HotelTest extends TestCase
 
         // Assert
         $response->assertStatus(200);
+        $this->assertNotEmpty($response->json());
 
-        $response->assertJsonFragment(['name' => 'Four Seasons Hotel']);
+        foreach ($response->json() as $hotel) {
+            $this->assertSame('United States', $hotel['country']);
+            $this->assertSame('San Francisco', $hotel['city']);
+        }
     }
 
     /** @test */

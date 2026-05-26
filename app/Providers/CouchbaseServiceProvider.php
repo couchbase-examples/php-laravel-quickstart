@@ -24,7 +24,8 @@ class CouchbaseServiceProvider extends ServiceProvider
         'view:clear',
         'route:cache',
         'route:clear',
-        'package:discover'
+        'package:discover',
+        'vendor:publish'
     ];
 
     private function shouldSkipDatabaseOperations(): bool
