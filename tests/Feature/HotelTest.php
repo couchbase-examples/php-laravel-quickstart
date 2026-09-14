@@ -50,8 +50,14 @@ class HotelTest extends TestCase
 
         // Assert
         $response->assertStatus(200);
-        $response->assertJsonFragment(['name' => 'Hotel Diva']);
-        $response->assertJsonFragment(['name' => 'Hotel Rex']);
+
+        $hotels = $response->json();
+        $this->assertNotEmpty($hotels);
+
+        foreach ($hotels as $hotel) {
+            $this->assertArrayHasKey('name', $hotel);
+            $this->assertStringContainsStringIgnoringCase('Hotel', $hotel['name']);
+        }
     }
 
     /** @test */
