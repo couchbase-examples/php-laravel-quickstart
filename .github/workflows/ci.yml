@@ -39,7 +39,8 @@ jobs:
       - name: Install Couchbase PHP extension
         run: |
           sudo pecl install couchbase
-          echo "extension=couchbase.so" | sudo tee -a $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
+          # PHP 8.5 quotes paths in `php --ini` output, so ask PHP for the loaded php.ini directly
+          echo "extension=couchbase.so" | sudo tee -a "$(php -r 'echo php_ini_loaded_file();')"
 
       - name: Verify Couchbase PHP extension installation
         run: php -m | grep -i couchbase
