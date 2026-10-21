@@ -24,15 +24,23 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          # setup-php only accepts major.minor; update: true pulls the latest 8.5 patch
+          php-version: "8.5"
+          update: true
           extensions: mbstring, json, pdo, curl
           ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=2G
           coverage: none
 
+      - name: Verify PHP version
+        run: |
+          php -v
+          php -r 'exit(version_compare(PHP_VERSION, "8.5.12", ">=") ? 0 : 1);'
+
       - name: Install Couchbase PHP extension
         run: |
           sudo pecl install couchbase
-          echo "extension=couchbase.so" | sudo tee -a $(php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||")
+          # PHP 8.5 quotes paths in `php --ini` output, so ask PHP for the loaded php.ini directly
+          echo "extension=couchbase.so" | sudo tee -a "$(php -r 'echo php_ini_loaded_file();')"
 
       - name: Verify Couchbase PHP extension installation
         run: php -m | grep -i couchbase

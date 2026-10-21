@@ -1,5 +1,5 @@
-# Use the PHP 8.2 base image
-FROM php:8.2
+# Use the PHP 8.5.12 base image (Debian trixie)
+FROM php:8.5.12
 
 # Update package lists and install required dependencies
 RUN apt-get update -y \
@@ -17,9 +17,9 @@ RUN apt-get update -y \
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install PHP extensions required by Laravel and Couchbase SDK usage
-RUN docker-php-ext-install dom mbstring pdo \
-    && printf "\n" | pecl install couchbase \
+# dom, mbstring and pdo are compiled into the official PHP image; only the
+# Couchbase extension needs to be installed (PHP 8.5 can't build dom standalone)
+RUN printf "\n" | pecl install couchbase \
     && docker-php-ext-enable couchbase
 
 # Set the working directory to /app
