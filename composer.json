@@ -8,7 +8,7 @@
         "php": "^8.5",
         "couchbase/couchbase": "^4.2",
         "darkaonline/l5-swagger": "^11.1",
-        "laravel/framework": "^12.1",
+        "laravel/framework": "^13.38",
         "laravel/tinker": "^3.0"
     },
     "require-dev": {
