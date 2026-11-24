@@ -46,6 +46,25 @@ class AirlineTest extends TestCase
         $response->assertJson(['message' => 'No airlines found']);
     }
 
+    /** @test */
+    public function it_treats_the_country_filter_as_a_value_not_query_text()
+    {
+        // A quote-breaking value must not widen the WHERE clause to every airline
+        $response = $this->getJson('/api/v1/airlines/list?' . http_build_query(['country' => "x' OR '1'='1"]));
+
+        $response->assertStatus(404);
+        $response->assertJson(['message' => 'No airlines found']);
+    }
+
+    /** @test */
+    public function it_applies_limit_and_offset_to_the_airline_list()
+    {
+        $response = $this->getJson('/api/v1/airlines/list?country=France&limit=3&offset=2');
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(3);
+    }
+
     /**
      * Tests for getting an airline by ID
      */
@@ -228,6 +247,15 @@ class AirlineTest extends TestCase
         $response = $this->getJson('/api/v1/airlines/to-airport/unknown_airport');
 
         // Assert
+        $response->assertStatus(404);
+        $response->assertJson(['message' => 'No airlines found']);
+    }
+
+    /** @test */
+    public function it_treats_the_destination_airport_code_as_a_value_not_query_text()
+    {
+        $response = $this->getJson('/api/v1/airlines/to-airport/' . rawurlencode("x' OR '1'='1"));
+
         $response->assertStatus(404);
         $response->assertJson(['message' => 'No airlines found']);
     }

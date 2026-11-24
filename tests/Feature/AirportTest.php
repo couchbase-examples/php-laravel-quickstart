@@ -233,6 +233,15 @@ class AirportTest extends TestCase
         $response->assertJson(['message' => 'No direct flight connections found']);
     }
 
+    /** @test */
+    public function it_treats_the_source_airport_code_as_a_value_not_query_text()
+    {
+        $response = $this->getJson('/api/v1/airports/direct-connections?' . http_build_query(['sourceAirportCode' => "x' OR '1'='1"]));
+
+        $response->assertStatus(404);
+        $response->assertJson(['message' => 'No direct flight connections found']);
+    }
+
     private function createAirport()
     {
         $airportData = $this->validAirportData();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\QueriesInventory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -39,6 +40,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Airline extends Model
 {
+    use QueriesInventory;
+
     protected $bucket;
 
     protected $fillable = [
@@ -57,25 +60,19 @@ class Airline extends Model
 
     public static function getAllAirlinesByCountry($country, $offset = 0, $limit = 10)
     {
-        $instance = new static;
+        $parameters = static::pagingParameters($offset, $limit);
         $query = "SELECT * FROM `travel-sample`.`inventory`.`airline`";
         if ($country) {
-            $query .= " WHERE country = '$country'";
+            $query .= " WHERE country = \$country";
+            $parameters['country'] = $country;
         }
-        $query .= " LIMIT $limit OFFSET $offset";
-        try {
-            $result = $instance->bucket->scope('inventory')->query($query);
-            $rows = $result->rows();
-            $rows = array_map(function ($row) {
-                unset($row['id']);
-                unset($row['type']);
-                return $row;
-            }, $rows);
-            return collect($rows);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching airlines: ' . $e->getMessage());
-            return collect([]);
-        }
+        $query .= " LIMIT \$limit OFFSET \$offset";
+
+        return static::queryInventory($query, $parameters)->map(function ($row) {
+            unset($row['id']);
+            unset($row['type']);
+            return $row;
+        });
     }
 
 
@@ -116,25 +113,20 @@ class Airline extends Model
 
     public static function getAirlinesToAirport($destinationAirportCode, $offset = 0, $limit = 10)
     {
-        $instance = new static;
         $query = "
         SELECT air.callsign, air.country, air.iata, air.icao, META(air).id AS id, air.name, air.type
         FROM (
             SELECT DISTINCT route.airlineid AS airlineId
             FROM `travel-sample`.`inventory`.`route` AS route
-            WHERE route.destinationairport = '$destinationAirportCode'
+            WHERE route.destinationairport = \$destinationAirportCode
         ) AS subquery
         JOIN `travel-sample`.`inventory`.`airline` AS air ON META(air).id = subquery.airlineId
-        LIMIT $limit OFFSET $offset";
+        LIMIT \$limit OFFSET \$offset";
 
-        try {
-            $result = $instance->bucket->scope('inventory')->query($query);
-            $rows = $result->rows();
-            return collect($rows);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching airlines to airport: ' . $e->getMessage());
-            return collect([]);
-        }
+        return static::queryInventory(
+            $query,
+            static::pagingParameters($offset, $limit) + ['destinationAirportCode' => $destinationAirportCode]
+        );
     }
 
 }

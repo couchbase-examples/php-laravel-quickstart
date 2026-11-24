@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\QueriesInventory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -73,6 +74,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Route extends Model
 {
+    use QueriesInventory;
+
     protected $bucket;
 
     protected $fillable = [
@@ -94,21 +97,13 @@ class Route extends Model
 
     public static function getAllRoutes($offset = 0, $limit = 10)
     {
-        $instance = new static;
-        $query = "SELECT * FROM `travel-sample`.`inventory`.`route` LIMIT $limit OFFSET $offset";
-        try {
-            $result = $instance->bucket->scope('inventory')->query($query);
-            $rows = $result->rows();
-            $rows = array_map(function ($row) {
-                unset($row['id']);
-                unset($row['type']);
-                return $row;
-            }, $rows);
-            return collect($rows);
-        } catch (\Exception $e) {
-            \Log::error('Error fetching routes: ' . $e->getMessage());
-            return collect([]);
-        }
+        $query = "SELECT * FROM `travel-sample`.`inventory`.`route` LIMIT \$limit OFFSET \$offset";
+
+        return static::queryInventory($query, static::pagingParameters($offset, $limit))->map(function ($row) {
+            unset($row['id']);
+            unset($row['type']);
+            return $row;
+        });
     }
 
     public static function findRoute($id)
